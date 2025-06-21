@@ -90,7 +90,15 @@ function App() {
       
       <div className="w-full max-w-md">
         <h1 className="text-4xl font-bold text-white text-center mb-2">
-          🏃‍♂️ Mood Run
+          👟 J&E Fitness 🤩
+          {/* You can change this to:
+          🏃‍♀️ J&E Fitness
+          💪 Mood Workout
+          ⚡ Energy Run
+          🎯 Feel Good Run
+          🌟 Wellness Run
+          🚀 Mood Movement
+          */}
         </h1>
         <p className="text-white text-center mb-8 opacity-90">
           Run based on how you feel
