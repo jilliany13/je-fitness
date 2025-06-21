@@ -90,7 +90,7 @@ function App() {
       
       <div className="w-full max-w-md">
         <h1 className="text-4xl font-bold text-white text-center mb-2">
-          👟 J&E Fitness 🤩
+          👟 J&E Fitness 💪
           {/* You can change this to:
           🏃‍♀️ J&E Fitness
           💪 Mood Workout
