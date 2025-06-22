@@ -28,7 +28,7 @@ const WorkoutTypeSelector = ({ onWorkoutTypeSelect }) => {
       emoji: '🎳',
       label: 'Bowling',
       description: 'Lane sports & precision',
-      color: 'bg-green-100 hover:bg-green-200 border-green-300'
+      color: 'bg-teal-100 hover:bg-teal-200 border-teal-300'
     }
   ];
 

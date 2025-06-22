@@ -1,33 +1,26 @@
 const MoodSelector = ({ onMoodSelect, workoutType, onReturnHome }) => {
   const getWorkoutRecommendations = (mood, workoutType) => {
     const recommendations = {
-      'Low Energy': {
+      'Meh': {
         'Gym': '10 min treadmill walk, 3 sets of 10 bodyweight squats, 2 sets of 5 push-ups, 5 min stretching',
         'Running': '5-10 min walk, light jogging, gentle stretching',
         'Basketball': 'Light dribbling drills, shooting practice, gentle warm-up',
         'Volleyball': 'Light passing drills, gentle serving practice, warm-up stretches',
         'Bowling': 'Light practice throws, focus on form and grip, gentle wrist stretches, 2-3 games with breaks, practice spares, focus on accuracy over power'
       },
-      'Meh': {
+      'Feeling Good': {
         'Gym': '15 min elliptical, 3x10 leg press, 3x8 lat pulldowns, 3x10 shoulder press, 2x10 bicep curls, 5 min stretching',
         'Running': '15 min steady pace run, interval walking',
         'Basketball': 'Shooting drills, light scrimmage, ball handling practice',
         'Volleyball': 'Passing drills, serving practice, light team drills',
         'Bowling': 'Practice spares and splits, focus on accuracy and consistency, 3-4 games, work on approach and release technique, practice different oil patterns, light stretching between games'
       },
-      'Feeling Good': {
+      'Energized': {
         'Gym': '20 min cardio, 4x8 bench press, 4x10 leg press, 3x10 lat pulldowns, 3x12 shoulder press, 3x15 bicep curls, 3x10 leg extensions',
         'Running': '20 min run with intervals, hill training',
         'Basketball': 'Full court drills, shooting practice, defensive work',
         'Volleyball': 'Full court drills, serving practice, blocking drills, team scrimmage',
         'Bowling': 'Full game practice, focus on strikes and spares, 4-5 games, work on hook shots and curve balls, practice spare conversions, focus on lane reading and oil pattern adjustment, moderate intensity with strategic breaks'
-      },
-      'Energized': {
-        'Gym': '30 min intense cardio, 5x5 heavy bench press, 5x8 heavy leg press, 4x10 lat pulldowns, 4x12 shoulder press, 4x15 bicep curls, 4x12 leg extensions, 3x10 deadlifts',
-        'Running': '30 min intense run, sprint intervals, hill repeats',
-        'Basketball': 'Intense scrimmage, full court drills, competitive play',
-        'Volleyball': 'Intense team scrimmage, advanced serving drills, competitive play',
-        'Bowling': 'Competitive practice, focus on advanced techniques, 5 games maximum, work on power shots and strike conversions, practice difficult spare combinations, focus on mental game and pressure situations, high intensity with strategic rest periods'
       },
       'Fired Up': {
         'Gym': '45 min cardio (HIIT), 5x5 heavy bench press, 5x8 heavy leg press, 5x10 lat pulldowns, 5x12 shoulder press, 5x15 bicep curls, 4x8 deadlifts, 4x10 squats',
@@ -42,31 +35,24 @@ const MoodSelector = ({ onMoodSelect, workoutType, onReturnHome }) => {
 
   const moods = [
     {
-      emoji: '😩',
-      label: 'Low Energy',
-      description: 'Need a gentle boost',
-      duration: 7,
-      color: 'bg-blue-100 hover:bg-blue-200 border-blue-300'
-    },
-    {
       emoji: '😐',
       label: 'Meh',
       description: 'Could use some movement',
-      duration: 15,
+      duration: 10,
       color: 'bg-yellow-100 hover:bg-yellow-200 border-yellow-300'
     },
     {
       emoji: '😊',
       label: 'Feeling Good',
       description: 'Ready for a solid workout',
-      duration: 20,
+      duration: 15,
       color: 'bg-green-100 hover:bg-green-200 border-green-300'
     },
     {
       emoji: '⚡',
       label: 'Energized',
       description: 'Feeling pumped up',
-      duration: 30,
+      duration: 20,
       color: 'bg-purple-100 hover:bg-purple-200 border-purple-300'
     },
     {
@@ -97,9 +83,6 @@ const MoodSelector = ({ onMoodSelect, workoutType, onReturnHome }) => {
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
           How are you feeling today?
         </h2>
-        <p className="text-gray-600 mb-2">
-          Choose your mood and we'll set the perfect {workoutType.toLowerCase()} workout
-        </p>
         <div className="text-sm text-gray-500">
           Selected: <span className="font-semibold">{workoutType}</span>
         </div>

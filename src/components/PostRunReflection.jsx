@@ -1,4 +1,9 @@
+import { useState } from 'react'
+
 const PostRunReflection = ({ preRunMood, onComplete }) => {
+  const [showCelebration, setShowCelebration] = useState(false)
+  const [selectedMood, setSelectedMood] = useState(null)
+
   const postRunMoods = [
     {
       emoji: '😴',
@@ -16,16 +21,21 @@ const PostRunReflection = ({ preRunMood, onComplete }) => {
       description: 'Feeling good'
     },
     {
-      emoji: '🤩',
-      label: 'Amazing',
-      description: 'Fantastic!'
-    },
-    {
       emoji: '💪',
       label: 'Energized',
       description: 'Ready for more!'
     }
   ]
+
+  const handleMoodSelect = (moodLabel) => {
+    setSelectedMood(moodLabel)
+    setShowCelebration(true)
+    
+    // Show celebration for 1.5 seconds before completing
+    setTimeout(() => {
+      onComplete(moodLabel)
+    }, 1500)
+  }
 
   return (
     <div className="space-y-6">
@@ -41,12 +51,30 @@ const PostRunReflection = ({ preRunMood, onComplete }) => {
         </p>
       </div>
 
+      {/* Celebration Animation */}
+      {showCelebration && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+          <div className="text-center space-y-4">
+            <div className="text-8xl animate-bounce">🎉</div>
+            <div className="text-6xl animate-bounce" style={{ animationDelay: '0.1s' }}>🎊</div>
+            <div className="text-7xl animate-bounce" style={{ animationDelay: '0.2s' }}>✨</div>
+            <div className="text-6xl animate-bounce" style={{ animationDelay: '0.3s' }}>🏆</div>
+            <div className="text-5xl animate-bounce" style={{ animationDelay: '0.4s' }}>💪</div>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-3">
         {postRunMoods.map((mood, index) => (
           <button
             key={index}
-            onClick={() => onComplete(mood.label)}
-            className="w-full p-4 rounded-xl border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 transform hover:scale-105"
+            onClick={() => handleMoodSelect(mood.label)}
+            disabled={showCelebration}
+            className={`w-full p-4 rounded-xl border-2 transition-all duration-200 transform hover:scale-105 ${
+              selectedMood === mood.label 
+                ? 'border-green-400 bg-green-50 scale-105' 
+                : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+            } ${showCelebration ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <div className="flex items-center space-x-4">
               <span className="text-3xl">{mood.emoji}</span>
@@ -54,6 +82,9 @@ const PostRunReflection = ({ preRunMood, onComplete }) => {
                 <div className="font-semibold text-gray-800">{mood.label}</div>
                 <div className="text-sm text-gray-600">{mood.description}</div>
               </div>
+              {selectedMood === mood.label && (
+                <div className="text-2xl animate-pulse">✅</div>
+              )}
             </div>
           </button>
         ))}

@@ -3,8 +3,7 @@ import WorkoutTypeSelector from './components/WorkoutTypeSelector'
 import MoodSelector from './components/MoodSelector'
 import RunTimer from './components/RunTimer'
 import PostRunReflection from './components/PostRunReflection'
-import StreakTracker from './components/StreakTracker'
-import Confetti from './components/Confetti'
+// import StreakTracker from './components/StreakTracker'
 
 function App() {
   const [currentView, setCurrentView] = useState('workout-selector') // workout-selector, mood-selector, timer, reflection
@@ -12,16 +11,15 @@ function App() {
   const [selectedMood, setSelectedMood] = useState(null)
   const [runDuration, setRunDuration] = useState(0)
   const [workoutRecommendation, setWorkoutRecommendation] = useState('')
-  const [streak, setStreak] = useState(0)
-  const [showConfetti, setShowConfetti] = useState(false)
+  // const [streak, setStreak] = useState(0)
 
   // Load streak from localStorage on component mount
-  useEffect(() => {
-    const savedStreak = localStorage.getItem('moodRunStreak')
-    if (savedStreak) {
-      setStreak(parseInt(savedStreak))
-    }
-  }, [])
+  // useEffect(() => {
+  //   const savedStreak = localStorage.getItem('moodRunStreak')
+  //   if (savedStreak) {
+  //     setStreak(parseInt(savedStreak))
+  //   }
+  // }, [])
 
   const handleWorkoutTypeSelect = (workoutType) => {
     setSelectedWorkoutType(workoutType)
@@ -55,40 +53,34 @@ function App() {
     existingWorkouts.push(workoutData)
     localStorage.setItem('moodRunHistory', JSON.stringify(existingWorkouts))
 
-    // Update streak
-    const yesterday = new Date()
-    yesterday.setDate(yesterday.getDate() - 1)
-    const yesterdayString = yesterday.toDateString()
+    // Update streak - COMMENTED OUT FOR NOW
+    // const yesterday = new Date()
+    // yesterday.setDate(yesterday.getDate() - 1)
+    // const yesterdayString = yesterday.toDateString()
     
-    const lastWorkoutDate = localStorage.getItem('lastWorkoutDate')
-    let newStreak = streak
+    // const lastWorkoutDate = localStorage.getItem('lastWorkoutDate')
+    // let newStreak = streak
     
-    if (lastWorkoutDate === today) {
-      // Already worked out today, don't increment streak
-    } else if (lastWorkoutDate === yesterdayString) {
-      // Worked out yesterday, increment streak
-      newStreak = streak + 1
-    } else if (lastWorkoutDate !== today) {
-      // Didn't workout yesterday, reset streak to 1
-      newStreak = 1
-    }
+    // if (lastWorkoutDate === today) {
+    //   // Already worked out today, don't increment streak
+    // } else if (lastWorkoutDate === yesterdayString) {
+    //   // Worked out yesterday, increment streak
+    //   newStreak = streak + 1
+    // } else if (lastWorkoutDate !== today) {
+    //   // Didn't workout yesterday, reset streak to 1
+    //   newStreak = 1
+    // }
     
-    setStreak(newStreak)
-    localStorage.setItem('moodRunStreak', newStreak.toString())
-    localStorage.setItem('lastWorkoutDate', today)
+    // setStreak(newStreak)
+    // localStorage.setItem('moodRunStreak', newStreak.toString())
+    // localStorage.setItem('lastWorkoutDate', today)
 
-    // Show confetti
-    setShowConfetti(true)
-    setTimeout(() => setShowConfetti(false), 3000)
-
-    // Reset to workout selector
-    setTimeout(() => {
-      setCurrentView('workout-selector')
-      setSelectedWorkoutType(null)
-      setSelectedMood(null)
-      setRunDuration(0)
-      setWorkoutRecommendation('')
-    }, 3000)
+    // Reset to workout selector immediately
+    setCurrentView('workout-selector')
+    setSelectedWorkoutType(null)
+    setSelectedMood(null)
+    setRunDuration(0)
+    setWorkoutRecommendation('')
   }
 
   const handleStopWorkout = () => {
@@ -116,11 +108,9 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      {showConfetti && <Confetti />}
-      
       <div className="w-full max-w-md">
         <h1 className="text-4xl font-bold text-white text-center mb-2 mt-8">
-          👟 J&E Fitness 💪
+            J&E Fitness 👟
           {/* You can change this to:
           🏃‍♀️ J&E Fitness
           💪 Mood Workout
@@ -134,7 +124,8 @@ function App() {
           Workout based on how you feel
         </p>
 
-        <StreakTracker streak={streak} />
+        {/* StreakTracker commented out for now */}
+        {/* <StreakTracker streak={streak} /> */}
 
         <div className="bg-white rounded-2xl shadow-xl p-6">
           {currentView === 'workout-selector' && (
