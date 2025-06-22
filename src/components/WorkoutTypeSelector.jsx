@@ -17,8 +17,20 @@ const WorkoutTypeSelector = ({ onWorkoutTypeSelect }) => {
       label: 'Basketball',
       description: 'Court sports & drills',
       color: 'bg-orange-100 hover:bg-orange-200 border-orange-300'
+    },
+    {
+      emoji: '🏐',
+      label: 'Volleyball',
+      description: 'Court sports & team drills',
+      color: 'bg-blue-100 hover:bg-blue-200 border-blue-300'
+    },
+    {
+      emoji: '🎳',
+      label: 'Bowling',
+      description: 'Lane sports & precision',
+      color: 'bg-green-100 hover:bg-green-200 border-green-300'
     }
-  ]
+  ];
 
   return (
     <div className="space-y-4">
@@ -43,9 +55,6 @@ const WorkoutTypeSelector = ({ onWorkoutTypeSelect }) => {
               <div className="text-left flex-1">
                 <div className="font-semibold text-gray-800">{workout.label}</div>
                 <div className="text-sm text-gray-600">{workout.description}</div>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl">→</div>
               </div>
             </div>
           </button>

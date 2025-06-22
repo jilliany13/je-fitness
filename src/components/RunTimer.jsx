@@ -80,6 +80,162 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
     )
   }
 
+  // Volleyball workout display
+  if (workoutType === 'Volleyball') {
+    return (
+      <div className="text-center space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Volleyball Workout for {mood} 🏐
+          </h2>
+          <p className="text-gray-600 mb-3">
+            Keep going! You've got this!
+          </p>
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
+            <p className="text-xs text-gray-600">{workoutRecommendation}</p>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="w-48 h-48 mx-auto flex items-center justify-center">
+            <div className="text-center relative">
+              {/* Volleyball net */}
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-1 bg-gray-400 rounded"></div>
+              {/* Volleyball going back and forth */}
+              <div className="text-6xl animate-volleyball-net">
+                🏐
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={onStop}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Stop Workout
+          </button>
+          
+          <button
+            onClick={onStopAndReturnHome}
+            className="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Stop Workout & Return to Home
+          </button>
+          
+          <div className="text-sm text-gray-500">
+            {isRunning ? 'Workout is running...' : 'Workout completed!'}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Gym workout display
+  if (workoutType === 'Gym') {
+    return (
+      <div className="text-center space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Gym Workout for {mood} 🏋️‍♂️
+          </h2>
+          <p className="text-gray-600 mb-3">
+            Keep going! You've got this!
+          </p>
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
+            <p className="text-xs text-gray-600">{workoutRecommendation}</p>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="w-48 h-48 mx-auto flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-8xl animate-gym-lift mb-2">
+                🏋️‍♂️
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={onStop}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Stop Workout
+          </button>
+          
+          <button
+            onClick={onStopAndReturnHome}
+            className="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Stop Workout & Return to Home
+          </button>
+          
+          <div className="text-sm text-gray-500">
+            {isRunning ? 'Workout is running...' : 'Workout completed!'}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Bowling workout display
+  if (workoutType === 'Bowling') {
+    return (
+      <div className="text-center space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Bowling Workout for {mood} 🎳
+          </h2>
+          <p className="text-gray-600 mb-3">
+            Keep going! You've got this!
+          </p>
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
+            <p className="text-xs text-gray-600">{workoutRecommendation}</p>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="w-48 h-48 mx-auto flex items-center justify-center">
+            <div className="text-center relative">
+              {/* Bowling lane */}
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-2 bg-amber-600 rounded"></div>
+              {/* Bowling ball rolling */}
+              <div className="text-6xl animate-bowling-roll">
+                🎳
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={onStop}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Stop Workout
+          </button>
+          
+          <button
+            onClick={onStopAndReturnHome}
+            className="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Stop Workout & Return to Home
+          </button>
+          
+          <div className="text-sm text-gray-500">
+            {isRunning ? 'Workout is running...' : 'Workout completed!'}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   // Regular timer display for other workout types
   return (
     <div className="text-center space-y-6">
