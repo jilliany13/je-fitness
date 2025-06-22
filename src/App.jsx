@@ -119,7 +119,7 @@ function App() {
       {showConfetti && <Confetti />}
       
       <div className="w-full max-w-md">
-        <h1 className="text-4xl font-bold text-white text-center mb-2">
+        <h1 className="text-4xl font-bold text-white text-center mb-2 mt-8">
           👟 J&E Fitness 💪
           {/* You can change this to:
           🏃‍♀️ J&E Fitness
