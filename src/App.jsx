@@ -3,10 +3,11 @@ import WorkoutTypeSelector from './components/WorkoutTypeSelector'
 import MoodSelector from './components/MoodSelector'
 import RunTimer from './components/RunTimer'
 import PostRunReflection from './components/PostRunReflection'
+import AboutPage from './components/AboutPage'
 // import StreakTracker from './components/StreakTracker'
 
 function App() {
-  const [currentView, setCurrentView] = useState('workout-selector') // workout-selector, mood-selector, timer, reflection
+  const [currentView, setCurrentView] = useState('workout-selector') // workout-selector, mood-selector, timer, reflection, about
   const [selectedWorkoutType, setSelectedWorkoutType] = useState(null)
   const [selectedMood, setSelectedMood] = useState(null)
   const [runDuration, setRunDuration] = useState(0)
@@ -38,20 +39,20 @@ function App() {
   }
 
   const handleReflectionComplete = (postRunMood) => {
-    // Save workout data to localStorage
-    const today = new Date().toDateString()
-    const workoutData = {
-      date: today,
-      workoutType: selectedWorkoutType,
-      preRunMood: selectedMood,
-      postRunMood: postRunMood,
-      duration: runDuration,
-      recommendation: workoutRecommendation
-    }
+    // Save workout data to localStorage - COMMENTED OUT
+    // const today = new Date().toDateString()
+    // const workoutData = {
+    //   date: today,
+    //   workoutType: selectedWorkoutType,
+    //   preRunMood: selectedMood,
+    //   postRunMood: postRunMood,
+    //   duration: runDuration,
+    //   recommendation: workoutRecommendation
+    // }
     
-    const existingWorkouts = JSON.parse(localStorage.getItem('moodRunHistory') || '[]')
-    existingWorkouts.push(workoutData)
-    localStorage.setItem('moodRunHistory', JSON.stringify(existingWorkouts))
+    // const existingWorkouts = JSON.parse(localStorage.getItem('moodRunHistory') || '[]')
+    // existingWorkouts.push(workoutData)
+    // localStorage.setItem('moodRunHistory', JSON.stringify(existingWorkouts))
 
     // Update streak - COMMENTED OUT FOR NOW
     // const yesterday = new Date()
@@ -106,6 +107,10 @@ function App() {
     setWorkoutRecommendation('')
   }
 
+  const handleAboutClick = () => {
+    setCurrentView('about')
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -120,9 +125,18 @@ function App() {
           🚀 Mood Movement
           */}
         </h1>
-        <p className="text-white text-center mb-8 opacity-90">
-          Workout based on how you feel
-        </p>
+        <div className="flex items-center justify-center space-x-2 mb-8">
+          <p className="text-white opacity-90">
+            Workout based on how you feel
+          </p>
+          <button
+            onClick={handleAboutClick}
+            className="text-white opacity-70 hover:opacity-100 transition-opacity duration-200 text-sm"
+            title="About J&E Fitness"
+          >
+            ⓘ
+          </button>
+        </div>
 
         {/* StreakTracker commented out for now */}
         {/* <StreakTracker streak={streak} /> */}
@@ -157,6 +171,10 @@ function App() {
               preRunMood={selectedMood}
               onComplete={handleReflectionComplete}
             />
+          )}
+
+          {currentView === 'about' && (
+            <AboutPage onReturnHome={handleReturnHome} />
           )}
         </div>
       </div>

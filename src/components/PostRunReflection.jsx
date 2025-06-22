@@ -10,22 +10,30 @@ const PostRunReflection = ({ preRunMood, onComplete }) => {
     {
       emoji: '😴',
       label: 'Tired',
-      description: 'Need rest'
+      description: 'Need rest',
+      baseColor: 'bg-yellow-100 border-yellow-300',
+      hoverColor: 'hover:bg-yellow-200'
     },
     {
       emoji: '😐',
       label: 'Same',
-      description: 'No change'
+      description: 'No change',
+      baseColor: 'bg-orange-100 border-orange-300',
+      hoverColor: 'hover:bg-orange-200'
     },
     {
       emoji: '😊',
       label: 'Better',
-      description: 'Feeling good'
+      description: 'Feeling good',
+      baseColor: 'bg-purple-100 border-purple-300',
+      hoverColor: 'hover:bg-purple-200'
     },
     {
       emoji: '💪',
       label: 'Energized',
-      description: 'Ready for more!'
+      description: 'Ready for more!',
+      baseColor: 'bg-blue-100 border-blue-300',
+      hoverColor: 'hover:bg-blue-200'
     }
   ]
 
@@ -75,7 +83,7 @@ const PostRunReflection = ({ preRunMood, onComplete }) => {
             className={`w-full p-4 rounded-xl border-2 transition-all duration-200 transform ${
               selectedMood === mood.label 
                 ? 'border-green-400 bg-green-50 scale-105' 
-                : `border-gray-200 ${supportsHover ? 'hover:border-blue-300 hover:bg-blue-50 hover:scale-105' : ''}`
+                : `${mood.baseColor} ${supportsHover ? mood.hoverColor + ' hover:scale-105' : ''}`
             } ${showCelebration ? 'opacity-50 cursor-not-allowed' : ''}`}
             style={{ 
               WebkitTapHighlightColor: 'transparent',
