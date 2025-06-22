@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { localAuthService } from '../services/localAuthService';
+import { realtimeAuthService } from '../services/realtimeAuthService';
 
 const Signup = ({ onSwitchToLogin, onSignupSuccess, onBackToWorkout }) => {
   const [email, setEmail] = useState('');
@@ -27,11 +27,23 @@ const Signup = ({ onSwitchToLogin, onSignupSuccess, onBackToWorkout }) => {
     setLoading(true);
 
     try {
-      await localAuthService.signUp(email, password);
+      await realtimeAuthService.signUp(email, password);
       onSignupSuccess();
     } catch (error) {
       console.error('Signup error:', error);
-      setError(error.message || 'Failed to create account. Please try again.');
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          setError('An account with this email already exists. Please sign in instead.');
+          break;
+        case 'auth/invalid-email':
+          setError('Please enter a valid email address.');
+          break;
+        case 'auth/weak-password':
+          setError('Password is too weak. Please choose a stronger password.');
+          break;
+        default:
+          setError('Failed to create account. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

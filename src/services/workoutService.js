@@ -1,8 +1,8 @@
-import { localAuthService } from './localAuthService';
+import { firebaseAuthService } from './firebaseAuthService';
 
 export const saveWorkout = async (workoutData) => {
   try {
-    const success = await localAuthService.saveWorkout(workoutData);
+    const success = await firebaseAuthService.saveWorkout(workoutData);
     return success;
   } catch (error) {
     console.error('Error saving workout:', error);
@@ -12,7 +12,7 @@ export const saveWorkout = async (workoutData) => {
 
 export const getUserStats = async () => {
   try {
-    const stats = await localAuthService.getUserStats();
+    const stats = await firebaseAuthService.getUserStats();
     return stats;
   } catch (error) {
     console.error('Error fetching user stats:', error);

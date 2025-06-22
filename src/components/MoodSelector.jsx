@@ -82,7 +82,6 @@ const MoodSelector = ({ onMoodSelect, workoutType, onReturnHome }) => {
       emoji: '😐',
       label: 'Meh',
       description: 'Could use some movement',
-      duration: 10,
       baseColor: 'bg-yellow-100 border-yellow-300',
       hoverColor: 'hover:bg-yellow-200'
     },
@@ -90,7 +89,6 @@ const MoodSelector = ({ onMoodSelect, workoutType, onReturnHome }) => {
       emoji: '😊',
       label: 'Feeling Good',
       description: 'Ready for a solid workout',
-      duration: 15,
       baseColor: 'bg-green-100 border-green-300',
       hoverColor: 'hover:bg-green-200'
     },
@@ -98,7 +96,6 @@ const MoodSelector = ({ onMoodSelect, workoutType, onReturnHome }) => {
       emoji: '⚡',
       label: 'Energized',
       description: 'Feeling pumped up',
-      duration: 20,
       baseColor: 'bg-purple-100 border-purple-300',
       hoverColor: 'hover:bg-purple-200'
     },
@@ -106,7 +103,6 @@ const MoodSelector = ({ onMoodSelect, workoutType, onReturnHome }) => {
       emoji: '🔥',
       label: 'Fired Up',
       description: 'Full power mode',
-      duration: 45,
       baseColor: 'bg-red-100 border-red-300',
       hoverColor: 'hover:bg-red-200'
     }
@@ -142,7 +138,7 @@ const MoodSelector = ({ onMoodSelect, workoutType, onReturnHome }) => {
         {moods.map((mood, index) => (
           <button
             key={index}
-            onClick={() => onMoodSelect(mood.label, mood.duration, getWorkoutRecommendations(mood.label, workoutType))}
+            onClick={() => onMoodSelect(mood.label, getWorkoutRecommendations(mood.label, workoutType))}
             className={`w-full p-4 rounded-xl border-2 transition-all duration-200 transform ${
               supportsHover ? 'hover:scale-105 ' + mood.hoverColor : ''
             } ${mood.baseColor}`}

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { localAuthService } from '../services/localAuthService';
+import { realtimeAuthService } from '../services/realtimeAuthService';
 
 const Login = ({ onSwitchToSignup, onLoginSuccess, onBackToWorkout }) => {
   const [email, setEmail] = useState('');
@@ -13,11 +13,26 @@ const Login = ({ onSwitchToSignup, onLoginSuccess, onBackToWorkout }) => {
     setLoading(true);
 
     try {
-      await localAuthService.signIn(email, password);
+      await realtimeAuthService.signIn(email, password);
       onLoginSuccess();
     } catch (error) {
       console.error('Login error:', error);
-      setError(error.message || 'Failed to log in. Please try again.');
+      switch (error.code) {
+        case 'auth/user-not-found':
+          setError('No account found with this email. Please sign up first.');
+          break;
+        case 'auth/wrong-password':
+          setError('Incorrect password. Please try again.');
+          break;
+        case 'auth/invalid-email':
+          setError('Please enter a valid email address.');
+          break;
+        case 'auth/too-many-requests':
+          setError('Too many failed attempts. Please try again later.');
+          break;
+        default:
+          setError('Failed to log in. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -84,7 +99,7 @@ const Login = ({ onSwitchToSignup, onLoginSuccess, onBackToWorkout }) => {
               onClick={onSwitchToSignup}
               className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
             >
-              Sign up here
+              Create one here
             </button>
           </p>
         </div>

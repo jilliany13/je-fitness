@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-import { localAuthService } from './services/localAuthService'
-import { saveWorkout } from './services/workoutService'
+import { realtimeAuthService } from './services/realtimeAuthService'
 import WorkoutTypeSelector from './components/WorkoutTypeSelector'
 import MoodSelector from './components/MoodSelector'
 import RunTimer from './components/RunTimer'
@@ -15,7 +14,6 @@ function App() {
   const [currentView, setCurrentView] = useState('workout-selector') // workout-selector, login, signup, dashboard, mood-selector, timer, reflection, about
   const [selectedWorkoutType, setSelectedWorkoutType] = useState(null)
   const [selectedMood, setSelectedMood] = useState(null)
-  const [runDuration, setRunDuration] = useState(0)
   const [workoutRecommendation, setWorkoutRecommendation] = useState('')
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -23,7 +21,7 @@ function App() {
 
   // Listen for authentication state changes
   useEffect(() => {
-    const unsubscribe = localAuthService.onAuthStateChanged((user) => {
+    const unsubscribe = realtimeAuthService.onAuthStateChanged((user) => {
       setUser(user)
       setLoading(false)
       
@@ -51,11 +49,10 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      await localAuthService.signOut()
+      await realtimeAuthService.signOut()
       setCurrentView('workout-selector')
       setSelectedWorkoutType(null)
       setSelectedMood(null)
-      setRunDuration(0)
       setWorkoutRecommendation('')
     } catch (error) {
       console.error('Error signing out:', error)
@@ -75,9 +72,8 @@ function App() {
     setCurrentView('mood-selector')
   }
 
-  const handleMoodSelect = (mood, duration, recommendation) => {
+  const handleMoodSelect = (mood, recommendation) => {
     setSelectedMood(mood)
-    setRunDuration(duration)
     setWorkoutRecommendation(recommendation)
     setCurrentView('timer')
   }
@@ -86,29 +82,12 @@ function App() {
     setCurrentView('reflection')
   }
 
-  const handleReflectionComplete = async (postRunMood) => {
-    // Save workout data to user account if logged in
-    if (user) {
-      const workoutData = {
-        workoutType: selectedWorkoutType,
-        preRunMood: selectedMood,
-        postRunMood: postRunMood,
-        duration: runDuration,
-        recommendation: workoutRecommendation
-      }
-      
-      const success = await saveWorkout(workoutData)
-      if (!success) {
-        console.error('Failed to save workout data')
-      }
-    }
-
+  const handleReflectionComplete = async () => {
     // Reset to workout selector
     setTimeout(() => {
       setCurrentView('workout-selector')
       setSelectedWorkoutType(null)
       setSelectedMood(null)
-      setRunDuration(0)
       setWorkoutRecommendation('')
     }, 100)
   }
@@ -116,7 +95,6 @@ function App() {
   const handleStopWorkout = () => {
     setCurrentView('mood-selector')
     setSelectedMood(null)
-    setRunDuration(0)
     setWorkoutRecommendation('')
   }
 
@@ -124,7 +102,6 @@ function App() {
     setCurrentView('workout-selector')
     setSelectedWorkoutType(null)
     setSelectedMood(null)
-    setRunDuration(0)
     setWorkoutRecommendation('')
   }
 
@@ -132,7 +109,6 @@ function App() {
     setCurrentView('workout-selector')
     setSelectedWorkoutType(null)
     setSelectedMood(null)
-    setRunDuration(0)
     setWorkoutRecommendation('')
   }
 
@@ -146,10 +122,6 @@ function App() {
 
   const handleShowLogin = () => {
     setCurrentView('login')
-  }
-
-  const handleShowSignup = () => {
-    setCurrentView('signup')
   }
 
   const handleShowDashboard = () => {
@@ -221,20 +193,12 @@ function App() {
                       </button>
                     </>
                   ) : (
-                    <>
-                      <button
-                        onClick={handleShowLogin}
-                        className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
-                      >
-                        Sign In
-                      </button>
-                      <button
-                        onClick={handleShowSignup}
-                        className="text-sm text-green-600 hover:text-green-700 font-medium transition-colors duration-200"
-                      >
-                        Sign Up
-                      </button>
-                    </>
+                    <button
+                      onClick={handleShowLogin}
+                      className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
+                    >
+                      Log In
+                    </button>
                   )}
                 </div>
               </div>
@@ -283,7 +247,6 @@ function App() {
           
           {currentView === 'timer' && (
             <RunTimer 
-              duration={runDuration}
               mood={selectedMood}
               workoutType={selectedWorkoutType}
               workoutRecommendation={workoutRecommendation}
@@ -295,8 +258,11 @@ function App() {
           
           {currentView === 'reflection' && (
             <PostRunReflection 
+              workoutType={selectedWorkoutType}
               preRunMood={selectedMood}
               onComplete={handleReflectionComplete}
+              onBackToMood={handleStopWorkout}
+              onBackToWorkoutType={handleStopAndReturnHome}
             />
           )}
 

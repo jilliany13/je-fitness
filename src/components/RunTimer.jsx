@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useHoverSupport } from './useHoverSupport';
 
-const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComplete, onStop, onStopAndReturnHome }) => {
+const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop, onStopAndReturnHome }) => {
   const supportsHover = useHoverSupport();
   
   // Helper function to conditionally apply hover classes

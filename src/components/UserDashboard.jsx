@@ -1,16 +1,23 @@
 import { useState, useEffect } from 'react';
-import { localAuthService } from '../services/localAuthService';
+import { realtimeAuthService } from '../services/realtimeAuthService';
 
 const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedWorkout, setSelectedWorkout] = useState(null);
+  const [showWorkoutModal, setShowWorkoutModal] = useState(false);
 
   const fetchUserData = async () => {
     try {
-      const data = await localAuthService.getUserStats();
+      console.log('Fetching user data...');
+      const data = await realtimeAuthService.getUserStats();
+      console.log('User data received:', data);
       setUserData(data);
+      setError(null);
     } catch (error) {
       console.error('Error fetching user data:', error);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -56,38 +63,63 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
     return emojis[mood] || '😊';
   };
 
-  const calculateStats = () => {
-    if (!userData?.workoutHistory) return {};
+  const getPostMoodEmoji = (mood) => {
+    const emojis = {
+      'Much Better': '😄',
+      'Better': '😊',
+      'Same': '😐',
+      'Worse': '😔',
+      'Much Worse': '😫'
+    };
+    return emojis[mood] || '😊';
+  };
 
+  const handleWorkoutClick = (workout) => {
+    setSelectedWorkout(workout);
+    setShowWorkoutModal(true);
+  };
+
+  const closeWorkoutModal = () => {
+    setShowWorkoutModal(false);
+    setSelectedWorkout(null);
+  };
+
+  const calculateStats = () => {
+    // Initialize default stats for new users
     const stats = {
-      totalWorkouts: userData.workoutHistory.length,
+      totalWorkouts: userData?.totalWorkouts || 0,
       workoutTypes: {},
       moods: {},
-      recentWorkouts: userData.workoutHistory.slice(-5).reverse(),
+      recentWorkouts: [],
       weeklyWorkouts: 0,
       monthlyWorkouts: 0
     };
 
-    const now = new Date();
-    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    // If there's workout history, calculate from it
+    if (userData?.workoutHistory && Array.isArray(userData.workoutHistory) && userData.workoutHistory.length > 0) {
+      stats.recentWorkouts = userData.workoutHistory.slice(-5).reverse();
+      
+      const now = new Date();
+      const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-    userData.workoutHistory.forEach(workout => {
-      // Count workout types
-      stats.workoutTypes[workout.workoutType] = (stats.workoutTypes[workout.workoutType] || 0) + 1;
-      
-      // Count moods
-      stats.moods[workout.preRunMood] = (stats.moods[workout.preRunMood] || 0) + 1;
-      
-      // Count recent workouts
-      const workoutDate = new Date(workout.date);
-      if (workoutDate >= oneWeekAgo) {
-        stats.weeklyWorkouts++;
-      }
-      if (workoutDate >= oneMonthAgo) {
-        stats.monthlyWorkouts++;
-      }
-    });
+      userData.workoutHistory.forEach(workout => {
+        // Count workout types
+        stats.workoutTypes[workout.workoutType] = (stats.workoutTypes[workout.workoutType] || 0) + 1;
+        
+        // Count moods
+        stats.moods[workout.preRunMood] = (stats.moods[workout.preRunMood] || 0) + 1;
+        
+        // Count recent workouts
+        const workoutDate = new Date(workout.date);
+        if (workoutDate >= oneWeekAgo) {
+          stats.weeklyWorkouts++;
+        }
+        if (workoutDate >= oneMonthAgo) {
+          stats.monthlyWorkouts++;
+        }
+      });
+    }
 
     return stats;
   };
@@ -96,8 +128,26 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
+      <div className="flex flex-col items-center justify-center py-12 space-y-4">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <p className="text-gray-600 text-sm">Loading your dashboard...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 space-y-4">
+        <div className="text-red-500 text-center">
+          <p className="font-semibold">Error loading dashboard</p>
+          <p className="text-sm text-gray-600 mt-2">{error}</p>
+        </div>
+        <button
+          onClick={fetchUserData}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
@@ -147,15 +197,23 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
       <div className="bg-white border border-gray-200 rounded-xl p-4">
         <h3 className="text-lg font-semibold text-gray-800 mb-3">Workout Types</h3>
         <div className="space-y-2">
-          {Object.entries(stats.workoutTypes).map(([type, count]) => (
-            <div key={type} className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <span className="text-xl">{getWorkoutTypeEmoji(type)}</span>
-                <span className="text-gray-700">{type}</span>
+          {Object.keys(stats.workoutTypes).length > 0 ? (
+            Object.entries(stats.workoutTypes).map(([type, count]) => (
+              <div key={type} className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xl">{getWorkoutTypeEmoji(type)}</span>
+                  <span className="text-gray-700">{type}</span>
+                </div>
+                <span className="font-semibold text-gray-800">{count}</span>
               </div>
-              <span className="font-semibold text-gray-800">{count}</span>
+            ))
+          ) : (
+            <div className="text-center text-gray-500 py-4">
+              <div className="text-2xl mb-2">🏃‍♀️</div>
+              <p className="text-sm">No workouts logged yet</p>
+              <p className="text-xs text-gray-400">Start your first workout to see your stats here!</p>
             </div>
-          ))}
+          )}
         </div>
       </div>
 
@@ -163,15 +221,23 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
       <div className="bg-white border border-gray-200 rounded-xl p-4">
         <h3 className="text-lg font-semibold text-gray-800 mb-3">Mood Trends</h3>
         <div className="space-y-2">
-          {Object.entries(stats.moods).map(([mood, count]) => (
-            <div key={mood} className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <span className="text-xl">{getMoodEmoji(mood)}</span>
-                <span className="text-gray-700">{mood}</span>
+          {Object.keys(stats.moods).length > 0 ? (
+            Object.entries(stats.moods).map(([mood, count]) => (
+              <div key={mood} className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xl">{getMoodEmoji(mood)}</span>
+                  <span className="text-gray-700">{mood}</span>
+                </div>
+                <span className="font-semibold text-gray-800">{count}</span>
               </div>
-              <span className="font-semibold text-gray-800">{count}</span>
+            ))
+          ) : (
+            <div className="text-center text-gray-500 py-4">
+              <div className="text-2xl mb-2">😊</div>
+              <p className="text-sm">No mood data yet</p>
+              <p className="text-xs text-gray-400">Log your first workout to track your mood trends!</p>
             </div>
-          ))}
+          )}
         </div>
       </div>
 
@@ -181,7 +247,11 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
         <div className="space-y-3">
           {stats.recentWorkouts.length > 0 ? (
             stats.recentWorkouts.map((workout, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <button
+                key={index}
+                onClick={() => handleWorkoutClick(workout)}
+                className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200 text-left"
+              >
                 <div className="flex items-center space-x-3">
                   <span className="text-2xl">{getWorkoutTypeEmoji(workout.workoutType)}</span>
                   <div>
@@ -193,11 +263,9 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
                 </div>
                 <div className="text-right">
                   <div className="text-sm text-gray-600">{new Date(workout.date).toLocaleDateString()}</div>
-                  {workout.duration && (
-                    <div className="text-xs text-gray-500">{workout.duration} min</div>
-                  )}
+                  <div className="text-xs text-blue-500 mt-1">Click to view details →</div>
                 </div>
-              </div>
+              </button>
             ))
           ) : (
             <div className="text-center text-gray-500 py-4">
@@ -216,6 +284,79 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
           Start New Workout
         </button>
       </div>
+
+      {/* Workout Detail Modal */}
+      {showWorkoutModal && selectedWorkout && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-gray-800">Workout Details</h3>
+                <button
+                  onClick={closeWorkoutModal}
+                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
+              {/* Workout Header */}
+              <div className="text-center py-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl">
+                <div className="text-4xl mb-2">{getWorkoutTypeEmoji(selectedWorkout.workoutType)}</div>
+                <h4 className="text-lg font-semibold text-gray-800">{selectedWorkout.workoutType}</h4>
+                <p className="text-sm text-gray-600">{new Date(selectedWorkout.date).toLocaleDateString()}</p>
+              </div>
+
+              {/* Workout Details */}
+              <div className="space-y-4">
+                {/* Pre-workout Mood */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h5 className="font-semibold text-gray-800 mb-2">Pre-Workout Mood</h5>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-2xl">{getMoodEmoji(selectedWorkout.preRunMood)}</span>
+                    <span className="text-gray-700">{selectedWorkout.preRunMood}</span>
+                  </div>
+                </div>
+
+                {/* Post-workout Mood */}
+                {selectedWorkout.postRunMood && (
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h5 className="font-semibold text-gray-800 mb-2">Post-Workout Mood</h5>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-2xl">{getPostMoodEmoji(selectedWorkout.postRunMood)}</span>
+                      <span className="text-gray-700">{selectedWorkout.postRunMood}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Notes */}
+                {selectedWorkout.notes && (
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h5 className="font-semibold text-gray-800 mb-2">Notes</h5>
+                    <p className="text-gray-700 text-sm">{selectedWorkout.notes}</p>
+                  </div>
+                )}
+
+                {/* Timestamp */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h5 className="font-semibold text-gray-800 mb-2">Logged At</h5>
+                  <p className="text-gray-700 text-sm">
+                    {new Date(selectedWorkout.timestamp).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+
+              {/* Close Button */}
+              <button
+                onClick={closeWorkoutModal}
+                className="w-full bg-gray-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-gray-600 transition-all duration-200"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
