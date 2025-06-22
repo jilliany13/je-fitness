@@ -1,75 +1,101 @@
 import { useState, useEffect } from 'react'
 
 const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComplete, onStop, onStopAndReturnHome }) => {
-  const [timeLeft, setTimeLeft] = useState(duration * 60) // Convert to seconds
-  const [isRunning, setIsRunning] = useState(true)
-
   const getMotivationalMessage = (workoutType, mood) => {
     const messages = {
       'Gym': {
-        'Low Energy': 'Small steps lead to big changes! 💪',
-        'Meh': 'Push through, you\'ll feel amazing after! 🔥',
-        'Feeling Good': 'You\'re in the zone, keep it up! ⚡',
-        'Energized': 'Crushing it! Your future self thanks you! 💯',
-        'Fired Up': 'Unstoppable! You\'re a beast! 🦁'
+        'Meh': 'Small steps lead to big changes! 💪',
+        'Feeling Good': 'Push through, you\'ll feel amazing after! 🔥',
+        'Energized': 'You\'re in the zone, keep it up! ⚡',
+        'Fired Up': 'Crushing it! Your future self thanks you! 💯'
       },
       'Running': {
-        'Low Energy': 'Every step counts, you\'re doing great! 🏃‍♀️',
-        'Meh': 'Find your rhythm and keep moving! 🎵',
-        'Feeling Good': 'You\'re flying! Keep that pace! ✈️',
-        'Energized': 'Speed demon! You\'re on fire! 🔥',
-        'Fired Up': 'Unleash the beast within! 🐆'
+        'Meh': 'Every step counts, you\'re doing great! 🏃‍♀️',
+        'Feeling Good': 'Find your rhythm and keep moving! 🎵',
+        'Energized': 'You\'re flying! Keep that pace! ✈️',
+        'Fired Up': 'Speed demon! You\'re on fire! 🔥'
       },
       'Basketball': {
-        'Low Energy': 'Dribble your way to energy! 🏀',
-        'Meh': 'Shoot for greatness! 🎯',
-        'Feeling Good': 'You\'re in the zone, nothing but net! 🏀',
-        'Energized': 'Dunk on your doubts! 💪',
-        'Fired Up': 'You\'re unstoppable on the court! 🏆'
+        'Meh': 'Dribble your way to energy! 🏀',
+        'Feeling Good': 'Shoot for greatness! 🎯',
+        'Energized': 'You\'re in the zone, nothing but net! 🏀',
+        'Fired Up': 'Dunk on your doubts! 💪'
       },
       'Volleyball': {
-        'Low Energy': 'Serve up some energy! 🏐',
-        'Meh': 'Spike your way to feeling great! 💥',
-        'Feeling Good': 'You\'re setting up for success! 🏐',
-        'Energized': 'Block out negativity! 🛡️',
-        'Fired Up': 'You\'re the MVP of this court! 🏆'
+        'Meh': 'Serve up some energy! 🏐',
+        'Feeling Good': 'Spike your way to feeling great! 💥',
+        'Energized': 'You\'re setting up for success! 🏐',
+        'Fired Up': 'Block out negativity! 🛡️'
       },
       'Bowling': {
-        'Low Energy': 'Roll your way to feeling better! 🎳',
-        'Meh': 'Strike out those bad vibes! ⚡',
-        'Feeling Good': 'You\'re on a roll! 🎳',
-        'Energized': 'Spare no effort! 💪',
-        'Fired Up': 'Perfect game energy! 🏆'
+        'Meh': 'Roll your way to feeling better! 🎳',
+        'Feeling Good': 'Strike out those bad vibes! ⚡',
+        'Energized': 'You\'re on a roll! 🎳',
+        'Fired Up': 'Spare no effort! 💪'
+      },
+      'Soccer': {
+        'Meh': 'Kick your way to energy! ⚽',
+        'Feeling Good': 'Score some goals and feel great! 🥅',
+        'Energized': 'You\'re dribbling through life! ⚽',
+        'Fired Up': 'Strike with power! 💥'
+      },
+      'Tennis': {
+        'Meh': 'Serve your way to energy! 🎾',
+        'Feeling Good': 'Rally for greatness! 🎾',
+        'Energized': 'You\'re in the zone, ace it! 🎾',
+        'Fired Up': 'Smash through barriers! 💪'
+      },
+      'Table Tennis': {
+        'Meh': 'Ping your way to energy! 🏓',
+        'Feeling Good': 'Pong for greatness! 🏓',
+        'Energized': 'You\'re in the zone, spin it! 🏓',
+        'Fired Up': 'Smash through limits! 💪'
+      },
+      'Badminton': {
+        'Meh': 'Shuttle your way to energy! 🏸',
+        'Feeling Good': 'Smash for greatness! 🏸',
+        'Energized': 'You\'re in the zone, drop it! 🏸',
+        'Fired Up': 'Clear through obstacles! 💪'
+      },
+      'Swimming': {
+        'Meh': 'Swim your way to energy! 🏊‍♂️',
+        'Feeling Good': 'Dive into greatness! 🏊‍♂️',
+        'Energized': 'You\'re in the zone, stroke it! 🏊‍♂️',
+        'Fired Up': 'Splash through limits! 💪'
+      },
+      'Cycling': {
+        'Meh': 'Pedal your way to energy! 🚴‍♂️',
+        'Feeling Good': 'Ride to greatness! 🚴‍♂️',
+        'Energized': 'You\'re in the zone, spin it! 🚴‍♂️',
+        'Fired Up': 'Race through life! 💨'
+      },
+      'Yoga': {
+        'Meh': 'Flow your way to peace! 🧘‍♀️',
+        'Feeling Good': 'Stretch into greatness! 🧘‍♀️',
+        'Energized': 'You\'re in the zone, breathe! 🧘‍♀️',
+        'Fired Up': 'Find your inner strength! 💪'
+      },
+      'Boxing': {
+        'Meh': 'Jab your way to energy! 🥊',
+        'Feeling Good': 'Punch for greatness! 🥊',
+        'Energized': 'You\'re in the zone, hook it! 🥊',
+        'Fired Up': 'Knock out your limits! 💥'
+      },
+      'Walking': {
+        'Meh': 'Step your way to energy! 🚶‍♀️',
+        'Feeling Good': 'Walk to greatness! 🚶‍♀️',
+        'Energized': 'You\'re in the zone, stride it! 🚶‍♀️',
+        'Fired Up': 'March through life! 💪'
+      },
+      'CrossFit': {
+        'Meh': 'WOD your way to energy! 🏋️‍♀️',
+        'Feeling Good': 'Lift for greatness! 🏋️‍♀️',
+        'Energized': 'You\'re in the zone, crush it! 🏋️‍♀️',
+        'Fired Up': 'Dominate your limits! 💪'
       }
     }
     return messages[workoutType]?.[mood] || 'Keep going! You\'ve got this! 💪'
   }
-
-  useEffect(() => {
-    if (!isRunning) return
-
-    const timer = setInterval(() => {
-      setTimeLeft((prevTime) => {
-        if (prevTime <= 1) {
-          clearInterval(timer)
-          setIsRunning(false)
-          onComplete()
-          return 0
-        }
-        return prevTime - 1
-      })
-    }, 1000)
-
-    return () => clearInterval(timer)
-  }, [isRunning, onComplete])
-
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
-  }
-
-  const progress = ((duration * 60 - timeLeft) / (duration * 60)) * 100
 
   // Basketball workout display
   if (workoutType === 'Basketball') {
@@ -91,7 +117,7 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
         <div className="relative">
           <div className="w-48 h-48 mx-auto flex items-center justify-center">
             <div className="text-center">
-              <div className="text-8xl animate-basketball-bounce mb-2">
+              <div className="text-8xl animate-bounce mb-2">
                 🏀
               </div>
             </div>
@@ -107,7 +133,7 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
           </button>
           
           <button
-            onClick={onStop}
+            onClick={onStopAndReturnHome}
             className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
           >
             Stop Workout
@@ -140,7 +166,7 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
               {/* Volleyball net */}
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-1 bg-gray-400 rounded"></div>
               {/* Volleyball going back and forth */}
-              <div className="text-6xl animate-volleyball-net">
+              <div className="text-6xl animate-pulse">
                 🏐
               </div>
             </div>
@@ -156,7 +182,7 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
           </button>
           
           <button
-            onClick={onStop}
+            onClick={onStopAndReturnHome}
             className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
           >
             Stop Workout
@@ -186,7 +212,7 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
         <div className="relative">
           <div className="w-48 h-48 mx-auto flex items-center justify-center">
             <div className="text-center">
-              <div className="text-8xl animate-gym-lift mb-2">
+              <div className="text-8xl animate-pulse mb-2">
                 🏋️‍♂️
               </div>
             </div>
@@ -202,7 +228,7 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
           </button>
           
           <button
-            onClick={onStop}
+            onClick={onStopAndReturnHome}
             className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
           >
             Stop Workout
@@ -251,7 +277,7 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
           </button>
           
           <button
-            onClick={onStop}
+            onClick={onStopAndReturnHome}
             className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
           >
             Stop Workout
@@ -261,7 +287,467 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
     )
   }
 
-  // Regular timer display for other workout types
+  // Soccer workout display
+  if (workoutType === 'Soccer') {
+    return (
+      <div className="text-center space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Soccer Workout for {mood} ⚽
+          </h2>
+          <p className="text-gray-600 mb-3">
+            {getMotivationalMessage(workoutType, mood)}
+          </p>
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
+            <p className="text-base text-gray-600">{workoutRecommendation}</p>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="w-48 h-48 mx-auto flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-8xl animate-bounce mb-2">
+                ⚽
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={onComplete}
+            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            ✅ Workout Completed
+          </button>
+          
+          <button
+            onClick={onStopAndReturnHome}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Stop Workout
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Tennis workout display
+  if (workoutType === 'Tennis') {
+    return (
+      <div className="text-center space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Tennis Workout for {mood} 🎾
+          </h2>
+          <p className="text-gray-600 mb-3">
+            {getMotivationalMessage(workoutType, mood)}
+          </p>
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
+            <p className="text-base text-gray-600">{workoutRecommendation}</p>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="w-48 h-48 mx-auto flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-8xl animate-bounce mb-2">
+                🎾
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={onComplete}
+            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            ✅ Workout Completed
+          </button>
+          
+          <button
+            onClick={onStopAndReturnHome}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Stop Workout
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Table Tennis workout display
+  if (workoutType === 'Table Tennis') {
+    return (
+      <div className="text-center space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Table Tennis Workout for {mood} 🏓
+          </h2>
+          <p className="text-gray-600 mb-3">
+            {getMotivationalMessage(workoutType, mood)}
+          </p>
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
+            <p className="text-base text-gray-600">{workoutRecommendation}</p>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="w-48 h-48 mx-auto flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-8xl animate-pulse mb-2">
+                🏓
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={onComplete}
+            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            ✅ Workout Completed
+          </button>
+          
+          <button
+            onClick={onStopAndReturnHome}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Stop Workout
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Badminton workout display
+  if (workoutType === 'Badminton') {
+    return (
+      <div className="text-center space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Badminton Workout for {mood} 🏸
+          </h2>
+          <p className="text-gray-600 mb-3">
+            {getMotivationalMessage(workoutType, mood)}
+          </p>
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
+            <p className="text-base text-gray-600">{workoutRecommendation}</p>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="w-48 h-48 mx-auto flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-8xl animate-bounce mb-2">
+                🏸
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={onComplete}
+            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            ✅ Workout Completed
+          </button>
+          
+          <button
+            onClick={onStopAndReturnHome}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Stop Workout
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Swimming workout display
+  if (workoutType === 'Swimming') {
+    return (
+      <div className="text-center space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Swimming Workout for {mood} 🏊‍♂️
+          </h2>
+          <p className="text-gray-600 mb-3">
+            {getMotivationalMessage(workoutType, mood)}
+          </p>
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
+            <p className="text-base text-gray-600">{workoutRecommendation}</p>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="w-48 h-48 mx-auto flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-8xl animate-pulse mb-2">
+                🏊‍♂️
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={onComplete}
+            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            ✅ Workout Completed
+          </button>
+          
+          <button
+            onClick={onStopAndReturnHome}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Stop Workout
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Cycling workout display
+  if (workoutType === 'Cycling') {
+    return (
+      <div className="text-center space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Cycling Workout for {mood} 🚴‍♂️
+          </h2>
+          <p className="text-gray-600 mb-3">
+            {getMotivationalMessage(workoutType, mood)}
+          </p>
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
+            <p className="text-base text-gray-600">{workoutRecommendation}</p>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="w-48 h-48 mx-auto flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-8xl animate-pulse mb-2">
+                🚴‍♂️
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={onComplete}
+            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            ✅ Workout Completed
+          </button>
+          
+          <button
+            onClick={onStopAndReturnHome}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Stop Workout
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Yoga workout display
+  if (workoutType === 'Yoga') {
+    return (
+      <div className="text-center space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Yoga Workout for {mood} 🧘‍♀️
+          </h2>
+          <p className="text-gray-600 mb-3">
+            {getMotivationalMessage(workoutType, mood)}
+          </p>
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
+            <p className="text-base text-gray-600">{workoutRecommendation}</p>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="w-48 h-48 mx-auto flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-8xl animate-pulse mb-2">
+                🧘‍♀️
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={onComplete}
+            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            ✅ Workout Completed
+          </button>
+          
+          <button
+            onClick={onStopAndReturnHome}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Stop Workout
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Boxing workout display
+  if (workoutType === 'Boxing') {
+    return (
+      <div className="text-center space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Boxing Workout for {mood} 🥊
+          </h2>
+          <p className="text-gray-600 mb-3">
+            {getMotivationalMessage(workoutType, mood)}
+          </p>
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
+            <p className="text-base text-gray-600">{workoutRecommendation}</p>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="w-48 h-48 mx-auto flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-8xl animate-bounce mb-2">
+                🥊
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={onComplete}
+            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            ✅ Workout Completed
+          </button>
+          
+          <button
+            onClick={onStopAndReturnHome}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Stop Workout
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Walking workout display
+  if (workoutType === 'Walking') {
+    return (
+      <div className="text-center space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Walking Workout for {mood} 🚶‍♀️
+          </h2>
+          <p className="text-gray-600 mb-3">
+            {getMotivationalMessage(workoutType, mood)}
+          </p>
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
+            <p className="text-base text-gray-600">{workoutRecommendation}</p>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="w-48 h-48 mx-auto flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-8xl animate-pulse mb-2">
+                🚶‍♀️
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={onComplete}
+            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            ✅ Workout Completed
+          </button>
+          
+          <button
+            onClick={onStopAndReturnHome}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Stop Workout
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // CrossFit workout display
+  if (workoutType === 'CrossFit') {
+    return (
+      <div className="text-center space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            CrossFit Workout for {mood} 🏋️‍♀️
+          </h2>
+          <p className="text-gray-600 mb-3">
+            {getMotivationalMessage(workoutType, mood)}
+          </p>
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
+            <p className="text-base text-gray-600">{workoutRecommendation}</p>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="w-48 h-48 mx-auto flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-8xl animate-pulse mb-2">
+                🏋️‍♀️
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={onComplete}
+            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            ✅ Workout Completed
+          </button>
+          
+          <button
+            onClick={onStopAndReturnHome}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Stop Workout
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Running workout display (fallback)
   return (
     <div className="text-center space-y-6">
       <div>
@@ -278,41 +764,12 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
       </div>
 
       <div className="relative">
-        <div className="w-48 h-48 mx-auto rounded-full border-8 border-gray-200 flex items-center justify-center">
+        <div className="w-48 h-48 mx-auto flex items-center justify-center">
           <div className="text-center">
-            <div className="text-5xl font-bold text-gray-800 mb-2">
-              {formatTime(timeLeft)}
-            </div>
-            <div className="text-sm text-gray-500">
-              remaining
+            <div className="text-8xl animate-pulse mb-2">
+              💪
             </div>
           </div>
-        </div>
-        
-        {/* Progress ring */}
-        <div className="absolute inset-0 w-48 h-48 mx-auto">
-          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-            <circle
-              cx="50"
-              cy="50"
-              r="45"
-              fill="none"
-              stroke="#e5e7eb"
-              strokeWidth="8"
-            />
-            <circle
-              cx="50"
-              cy="50"
-              r="45"
-              fill="none"
-              stroke="#10b981"
-              strokeWidth="8"
-              strokeDasharray={`${2 * Math.PI * 45}`}
-              strokeDashoffset={`${2 * Math.PI * 45 * (1 - progress / 100)}`}
-              strokeLinecap="round"
-              className="transition-all duration-1000 ease-linear"
-            />
-          </svg>
         </div>
       </div>
 
@@ -325,7 +782,7 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
         </button>
         
         <button
-          onClick={onStop}
+          onClick={onStopAndReturnHome}
           className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
         >
           Stop Workout
