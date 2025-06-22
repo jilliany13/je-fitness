@@ -1,6 +1,14 @@
 import { useState, useEffect } from 'react'
+import { useHoverSupport } from './useHoverSupport';
 
 const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComplete, onStop, onStopAndReturnHome }) => {
+  const supportsHover = useHoverSupport();
+  
+  // Helper function to conditionally apply hover classes
+  const getButtonClasses = (baseClasses, hoverClasses) => {
+    return `${baseClasses} ${supportsHover ? hoverClasses : ''}`;
+  };
+
   const getMotivationalMessage = (workoutType, mood) => {
     const messages = {
       'Gym': {
@@ -127,14 +135,20 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
         <div className="space-y-3">
           <button
             onClick={onComplete}
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-green-600"
+            )}
           >
             ✅ Workout Completed
           </button>
           
           <button
             onClick={onStopAndReturnHome}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-red-600"
+            )}
           >
             Stop Workout
           </button>
@@ -176,14 +190,20 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
         <div className="space-y-3">
           <button
             onClick={onComplete}
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-green-600"
+            )}
           >
             ✅ Workout Completed
           </button>
           
           <button
             onClick={onStopAndReturnHome}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-red-600"
+            )}
           >
             Stop Workout
           </button>
@@ -222,14 +242,20 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
         <div className="space-y-3">
           <button
             onClick={onComplete}
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-green-600"
+            )}
           >
             ✅ Workout Completed
           </button>
           
           <button
             onClick={onStopAndReturnHome}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-red-600"
+            )}
           >
             Stop Workout
           </button>
@@ -271,14 +297,20 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
         <div className="space-y-3">
           <button
             onClick={onComplete}
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-green-600"
+            )}
           >
             ✅ Workout Completed
           </button>
           
           <button
             onClick={onStopAndReturnHome}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-red-600"
+            )}
           >
             Stop Workout
           </button>
@@ -317,14 +349,20 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
         <div className="space-y-3">
           <button
             onClick={onComplete}
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-green-600"
+            )}
           >
             ✅ Workout Completed
           </button>
           
           <button
             onClick={onStopAndReturnHome}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-red-600"
+            )}
           >
             Stop Workout
           </button>
@@ -363,14 +401,20 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
         <div className="space-y-3">
           <button
             onClick={onComplete}
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-green-600"
+            )}
           >
             ✅ Workout Completed
           </button>
           
           <button
             onClick={onStopAndReturnHome}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-red-600"
+            )}
           >
             Stop Workout
           </button>
@@ -409,14 +453,20 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
         <div className="space-y-3">
           <button
             onClick={onComplete}
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-green-600"
+            )}
           >
             ✅ Workout Completed
           </button>
           
           <button
             onClick={onStopAndReturnHome}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-red-600"
+            )}
           >
             Stop Workout
           </button>
@@ -455,14 +505,20 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
         <div className="space-y-3">
           <button
             onClick={onComplete}
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-green-600"
+            )}
           >
             ✅ Workout Completed
           </button>
           
           <button
             onClick={onStopAndReturnHome}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-red-600"
+            )}
           >
             Stop Workout
           </button>
@@ -501,14 +557,20 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
         <div className="space-y-3">
           <button
             onClick={onComplete}
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-green-600"
+            )}
           >
             ✅ Workout Completed
           </button>
           
           <button
             onClick={onStopAndReturnHome}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-red-600"
+            )}
           >
             Stop Workout
           </button>
@@ -547,14 +609,20 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
         <div className="space-y-3">
           <button
             onClick={onComplete}
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-green-600"
+            )}
           >
             ✅ Workout Completed
           </button>
           
           <button
             onClick={onStopAndReturnHome}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-red-600"
+            )}
           >
             Stop Workout
           </button>
@@ -593,14 +661,20 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
         <div className="space-y-3">
           <button
             onClick={onComplete}
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-green-600"
+            )}
           >
             ✅ Workout Completed
           </button>
           
           <button
             onClick={onStopAndReturnHome}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-red-600"
+            )}
           >
             Stop Workout
           </button>
@@ -639,14 +713,20 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
         <div className="space-y-3">
           <button
             onClick={onComplete}
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-green-600"
+            )}
           >
             ✅ Workout Completed
           </button>
           
           <button
             onClick={onStopAndReturnHome}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-red-600"
+            )}
           >
             Stop Workout
           </button>
@@ -685,14 +765,20 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
         <div className="space-y-3">
           <button
             onClick={onComplete}
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-green-600"
+            )}
           >
             ✅ Workout Completed
           </button>
           
           <button
             onClick={onStopAndReturnHome}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-red-600"
+            )}
           >
             Stop Workout
           </button>
@@ -731,14 +817,20 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
         <div className="space-y-3">
           <button
             onClick={onComplete}
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-green-600"
+            )}
           >
             ✅ Workout Completed
           </button>
           
           <button
             onClick={onStopAndReturnHome}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+            className={getButtonClasses(
+              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+              "hover:bg-red-600"
+            )}
           >
             Stop Workout
           </button>
@@ -776,14 +868,20 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
       <div className="space-y-3">
         <button
           onClick={onComplete}
-          className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          className={getButtonClasses(
+            "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+            "hover:bg-green-600"
+          )}
         >
           ✅ Workout Completed
         </button>
         
         <button
           onClick={onStopAndReturnHome}
-          className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          className={getButtonClasses(
+            "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
+            "hover:bg-red-600"
+          )}
         >
           Stop Workout
         </button>

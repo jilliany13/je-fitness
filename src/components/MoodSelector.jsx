@@ -1,4 +1,8 @@
+import { useHoverSupport } from './useHoverSupport';
+
 const MoodSelector = ({ onMoodSelect, workoutType, onReturnHome }) => {
+  const supportsHover = useHoverSupport();
+  
   const getWorkoutRecommendations = (mood, workoutType) => {
     const recommendations = {
       'Meh': {
@@ -79,28 +83,32 @@ const MoodSelector = ({ onMoodSelect, workoutType, onReturnHome }) => {
       label: 'Meh',
       description: 'Could use some movement',
       duration: 10,
-      color: 'bg-yellow-100 hover:bg-yellow-200 border-yellow-300'
+      baseColor: 'bg-yellow-100 border-yellow-300',
+      hoverColor: 'hover:bg-yellow-200'
     },
     {
       emoji: '😊',
       label: 'Feeling Good',
       description: 'Ready for a solid workout',
       duration: 15,
-      color: 'bg-green-100 hover:bg-green-200 border-green-300'
+      baseColor: 'bg-green-100 border-green-300',
+      hoverColor: 'hover:bg-green-200'
     },
     {
       emoji: '⚡',
       label: 'Energized',
       description: 'Feeling pumped up',
       duration: 20,
-      color: 'bg-purple-100 hover:bg-purple-200 border-purple-300'
+      baseColor: 'bg-purple-100 border-purple-300',
+      hoverColor: 'hover:bg-purple-200'
     },
     {
       emoji: '🔥',
       label: 'Fired Up',
       description: 'Full power mode',
       duration: 45,
-      color: 'bg-red-100 hover:bg-red-200 border-red-300'
+      baseColor: 'bg-red-100 border-red-300',
+      hoverColor: 'hover:bg-red-200'
     }
   ]
 
@@ -110,7 +118,9 @@ const MoodSelector = ({ onMoodSelect, workoutType, onReturnHome }) => {
       <div className="flex justify-start">
         <button
           onClick={onReturnHome}
-          className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 px-3 py-1.5 rounded-md border border-gray-300 transition-all duration-200 text-sm font-medium"
+          className={`flex items-center space-x-1 bg-gray-100 text-gray-700 px-3 py-1.5 rounded-md border border-gray-300 transition-all duration-200 text-sm font-medium ${
+            supportsHover ? 'hover:bg-gray-200 hover:text-gray-900' : ''
+          }`}
           title="Return to Main Page"
         >
           <span className="text-sm">←</span>
@@ -133,13 +143,20 @@ const MoodSelector = ({ onMoodSelect, workoutType, onReturnHome }) => {
           <button
             key={index}
             onClick={() => onMoodSelect(mood.label, mood.duration, getWorkoutRecommendations(mood.label, workoutType))}
-            className={`w-full p-4 rounded-xl border-2 transition-all duration-200 transform hover:scale-105 ${mood.color}`}
+            className={`w-full p-4 rounded-xl border-2 transition-all duration-200 transform ${
+              supportsHover ? 'hover:scale-105 ' + mood.hoverColor : ''
+            } ${mood.baseColor}`}
             style={{ 
               WebkitTapHighlightColor: 'transparent',
               WebkitTouchCallout: 'none',
               WebkitUserSelect: 'none',
-              userSelect: 'none'
+              userSelect: 'none',
+              outline: 'none',
+              WebkitAppearance: 'none',
+              MozAppearance: 'none',
+              appearance: 'none'
             }}
+            onTouchStart={(e) => e.preventDefault()}
           >
             <div className="flex items-center space-x-4">
               <span className="text-3xl">{mood.emoji}</span>

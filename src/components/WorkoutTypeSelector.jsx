@@ -1,94 +1,113 @@
+import { useHoverSupport } from './useHoverSupport';
+
 const WorkoutTypeSelector = ({ onWorkoutTypeSelect }) => {
+  const supportsHover = useHoverSupport();
+  
   const workoutTypes = [
     {
       emoji: '🏋️‍♂️',
       label: 'Gym',
       description: 'Strength training & machines',
-      color: 'bg-purple-100 hover:bg-purple-200 border-purple-300'
+      baseColor: 'bg-purple-100 border-purple-300',
+      hoverColor: 'hover:bg-purple-200'
     },
     {
       emoji: '🏃‍♂️',
       label: 'Running',
       description: 'Cardio & outdoor running',
-      color: 'bg-green-100 hover:bg-green-200 border-green-300'
+      baseColor: 'bg-green-100 border-green-300',
+      hoverColor: 'hover:bg-green-200'
     },
     {
       emoji: '🏀',
       label: 'Basketball',
       description: 'Court sports & drills',
-      color: 'bg-orange-100 hover:bg-orange-200 border-orange-300'
+      baseColor: 'bg-orange-100 border-orange-300',
+      hoverColor: 'hover:bg-orange-200'
     },
     {
       emoji: '🏊‍♂️',
       label: 'Swimming',
       description: 'Water sports & cardio',
-      color: 'bg-cyan-100 hover:bg-cyan-200 border-cyan-300'
+      baseColor: 'bg-cyan-100 border-cyan-300',
+      hoverColor: 'hover:bg-cyan-200'
     },
     {
       emoji: '🎾',
       label: 'Tennis',
       description: 'Racket sports & agility',
-      color: 'bg-yellow-100 hover:bg-yellow-200 border-yellow-300'
+      baseColor: 'bg-yellow-100 border-yellow-300',
+      hoverColor: 'hover:bg-yellow-200'
     },
     {
       emoji: '🏐',
       label: 'Volleyball',
       description: 'Court sports & team drills',
-      color: 'bg-blue-100 hover:bg-blue-200 border-blue-300'
+      baseColor: 'bg-blue-100 border-blue-300',
+      hoverColor: 'hover:bg-blue-200'
     },
     {
       emoji: '🥊',
       label: 'Boxing',
       description: 'Combat sports & strength',
-      color: 'bg-red-100 hover:bg-red-200 border-red-300'
+      baseColor: 'bg-red-100 border-red-300',
+      hoverColor: 'hover:bg-red-200'
     },
     {
       emoji: '🎳',
       label: 'Bowling',
       description: 'Lane sports & precision',
-      color: 'bg-teal-100 hover:bg-teal-200 border-teal-300'
+      baseColor: 'bg-teal-100 border-teal-300',
+      hoverColor: 'hover:bg-teal-200'
     },
     {
       emoji: '🧘‍♀️',
       label: 'Yoga',
       description: 'Mind-body wellness',
-      color: 'bg-rose-100 hover:bg-rose-200 border-rose-300'
+      baseColor: 'bg-rose-100 border-rose-300',
+      hoverColor: 'hover:bg-rose-200'
     },
     {
       emoji: '⚽',
       label: 'Soccer',
       description: 'Field sports & team play',
-      color: 'bg-emerald-100 hover:bg-emerald-200 border-emerald-300'
+      baseColor: 'bg-emerald-100 border-emerald-300',
+      hoverColor: 'hover:bg-emerald-200'
     },
     {
       emoji: '🏓',
       label: 'Table Tennis',
       description: 'Indoor racket sports',
-      color: 'bg-pink-100 hover:bg-pink-200 border-pink-300'
+      baseColor: 'bg-pink-100 border-pink-300',
+      hoverColor: 'hover:bg-pink-200'
     },
     {
       emoji: '🚴‍♂️',
       label: 'Cycling',
       description: 'Outdoor cardio & endurance',
-      color: 'bg-lime-100 hover:bg-lime-200 border-lime-300'
+      baseColor: 'bg-lime-100 border-lime-300',
+      hoverColor: 'hover:bg-lime-200'
     },
     {
       emoji: '🏸',
       label: 'Badminton',
       description: 'Racket sports & reflexes',
-      color: 'bg-indigo-100 hover:bg-indigo-200 border-indigo-300'
+      baseColor: 'bg-indigo-100 border-indigo-300',
+      hoverColor: 'hover:bg-indigo-200'
     },
     {
       emoji: '🏃‍♀️',
       label: 'Walking',
       description: 'Low-impact cardio',
-      color: 'bg-slate-100 hover:bg-slate-200 border-slate-300'
+      baseColor: 'bg-slate-100 border-slate-300',
+      hoverColor: 'hover:bg-slate-200'
     },
     {
       emoji: '🏋️‍♀️',
       label: 'CrossFit',
       description: 'High-intensity training',
-      color: 'bg-amber-100 hover:bg-amber-200 border-amber-300'
+      baseColor: 'bg-amber-100 border-amber-300',
+      hoverColor: 'hover:bg-amber-200'
     }
   ];
 
@@ -108,7 +127,9 @@ const WorkoutTypeSelector = ({ onWorkoutTypeSelect }) => {
           <button
             key={index}
             onClick={() => onWorkoutTypeSelect(workout.label)}
-            className={`w-full p-4 rounded-xl border-2 transition-all duration-200 transform hover:scale-103 ${workout.color}`}
+            className={`w-full p-4 rounded-xl border-2 transition-all duration-200 transform ${
+              supportsHover ? 'hover:scale-103 ' + workout.hoverColor : ''
+            } ${workout.baseColor}`}
             style={{ 
               WebkitTapHighlightColor: 'transparent',
               WebkitTouchCallout: 'none',

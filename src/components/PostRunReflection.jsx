@@ -1,8 +1,10 @@
 import { useState } from 'react'
+import { useHoverSupport } from './useHoverSupport';
 
 const PostRunReflection = ({ preRunMood, onComplete }) => {
   const [showCelebration, setShowCelebration] = useState(false)
   const [selectedMood, setSelectedMood] = useState(null)
+  const supportsHover = useHoverSupport();
 
   const postRunMoods = [
     {
@@ -70,11 +72,22 @@ const PostRunReflection = ({ preRunMood, onComplete }) => {
             key={index}
             onClick={() => handleMoodSelect(mood.label)}
             disabled={showCelebration}
-            className={`w-full p-4 rounded-xl border-2 transition-all duration-200 transform hover:scale-105 ${
+            className={`w-full p-4 rounded-xl border-2 transition-all duration-200 transform ${
               selectedMood === mood.label 
                 ? 'border-green-400 bg-green-50 scale-105' 
-                : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                : `border-gray-200 ${supportsHover ? 'hover:border-blue-300 hover:bg-blue-50 hover:scale-105' : ''}`
             } ${showCelebration ? 'opacity-50 cursor-not-allowed' : ''}`}
+            style={{ 
+              WebkitTapHighlightColor: 'transparent',
+              WebkitTouchCallout: 'none',
+              WebkitUserSelect: 'none',
+              userSelect: 'none',
+              outline: 'none',
+              WebkitAppearance: 'none',
+              MozAppearance: 'none',
+              appearance: 'none'
+            }}
+            onTouchStart={(e) => e.preventDefault()}
           >
             <div className="flex items-center space-x-4">
               <span className="text-3xl">{mood.emoji}</span>
