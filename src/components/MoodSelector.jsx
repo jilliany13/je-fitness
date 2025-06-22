@@ -1,4 +1,35 @@
-const MoodSelector = ({ onMoodSelect }) => {
+const MoodSelector = ({ onMoodSelect, workoutType, onReturnHome }) => {
+  const getWorkoutRecommendations = (mood, workoutType) => {
+    const recommendations = {
+      'Low Energy': {
+        'Gym': '10 min treadmill walk, 5 min stretching, 3 sets of 10 bodyweight squats, 2 sets of 5 push-ups, 5 min cool-down',
+        'Running': '5-10 min walk, light jogging, gentle stretching',
+        'Basketball': 'Light dribbling drills, shooting practice, gentle warm-up'
+      },
+      'Meh': {
+        'Gym': '15 min elliptical, 3x10 leg press (light weight), 3x8 lat pulldowns, 3x10 shoulder press, 2x10 bicep curls, 5 min stretching',
+        'Running': '15 min steady pace run, interval walking',
+        'Basketball': 'Shooting drills, light scrimmage, ball handling practice'
+      },
+      'Feeling Good': {
+        'Gym': '20 min cardio (treadmill/elliptical), 4x8 bench press, 4x10 leg press, 3x10 lat pulldowns, 3x12 shoulder press, 3x15 bicep curls, 3x15 tricep extensions, 3x10 leg extensions, 3x10 leg curls',
+        'Running': '20 min run with intervals, hill training',
+        'Basketball': 'Full court drills, shooting practice, defensive work'
+      },
+      'Energized': {
+        'Gym': '30 min intense cardio, 5x5 heavy bench press, 5x8 heavy leg press, 4x10 lat pulldowns, 4x12 shoulder press, 4x15 bicep curls, 4x15 tricep extensions, 4x12 leg extensions, 4x12 leg curls, 3x10 deadlifts, 3x10 squats',
+        'Running': '30 min intense run, sprint intervals, hill repeats',
+        'Basketball': 'Intense scrimmage, full court drills, competitive play'
+      },
+      'Fired Up': {
+        'Gym': '45 min cardio (HIIT), 5x5 heavy bench press, 5x8 heavy leg press, 5x10 lat pulldowns, 5x12 shoulder press, 5x15 bicep curls, 5x15 tricep extensions, 5x12 leg extensions, 5x12 leg curls, 4x8 deadlifts, 4x10 squats, 3x10 pull-ups, 3x10 dips, 3x15 calf raises',
+        'Running': '45 min long distance run, tempo training',
+        'Basketball': 'Full game simulation, advanced drills, endurance training'
+      }
+    }
+    return recommendations[mood]?.[workoutType] || 'Custom workout based on your mood'
+  }
+
   const moods = [
     {
       emoji: '😩',
@@ -17,42 +48,58 @@ const MoodSelector = ({ onMoodSelect }) => {
     {
       emoji: '😊',
       label: 'Feeling Good',
-      description: 'Ready for a solid run',
+      description: 'Ready for a solid workout',
       duration: 20,
       color: 'bg-green-100 hover:bg-green-200 border-green-300'
     },
     {
-      emoji: '🔥',
-      label: 'Fired Up',
-      description: 'Let\'s crush this!',
-      duration: 30,
-      color: 'bg-red-100 hover:bg-red-200 border-red-300'
-    },
-    {
       emoji: '⚡',
       label: 'Energized',
+      description: 'Feeling pumped up',
+      duration: 30,
+      color: 'bg-purple-100 hover:bg-purple-200 border-purple-300'
+    },
+    {
+      emoji: '🔥',
+      label: 'Fired Up',
       description: 'Full power mode',
       duration: 45,
-      color: 'bg-purple-100 hover:bg-purple-200 border-purple-300'
+      color: 'bg-red-100 hover:bg-red-200 border-red-300'
     }
   ]
 
   return (
     <div className="space-y-4">
+      {/* Back button positioned above title */}
+      <div className="flex justify-start">
+        <button
+          onClick={onReturnHome}
+          className="flex items-center space-x-1 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 px-3 py-1.5 rounded-md border border-gray-300 transition-all duration-200 text-sm font-medium"
+          title="Return to Main Page"
+        >
+          <span className="text-sm">←</span>
+          <span>Back</span>
+        </button>
+      </div>
+
+      {/* Title section - full width, no interference */}
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
           How are you feeling today?
         </h2>
-        <p className="text-gray-600">
-          Choose your mood and we'll set the perfect run duration
+        <p className="text-gray-600 mb-2">
+          Choose your mood and we'll set the perfect {workoutType.toLowerCase()} workout
         </p>
+        <div className="text-sm text-gray-500">
+          Selected: <span className="font-semibold">{workoutType}</span>
+        </div>
       </div>
 
       <div className="space-y-3">
         {moods.map((mood, index) => (
           <button
             key={index}
-            onClick={() => onMoodSelect(mood.label, mood.duration)}
+            onClick={() => onMoodSelect(mood.label, mood.duration, getWorkoutRecommendations(mood.label, workoutType))}
             className={`w-full p-4 rounded-xl border-2 transition-all duration-200 transform hover:scale-105 ${mood.color}`}
           >
             <div className="flex items-center space-x-4">
@@ -63,7 +110,7 @@ const MoodSelector = ({ onMoodSelect }) => {
               </div>
               <div className="text-right">
                 <div className="font-bold text-gray-800">{mood.duration}m</div>
-                <div className="text-xs text-gray-500">run</div>
+                <div className="text-xs text-gray-500">workout</div>
               </div>
             </div>
           </button>

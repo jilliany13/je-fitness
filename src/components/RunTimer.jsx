@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const RunTimer = ({ duration, mood, onComplete, onStop }) => {
+const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComplete, onStop, onStopAndReturnHome }) => {
   const [timeLeft, setTimeLeft] = useState(duration * 60) // Convert to seconds
   const [isRunning, setIsRunning] = useState(true)
 
@@ -30,15 +30,70 @@ const RunTimer = ({ duration, mood, onComplete, onStop }) => {
 
   const progress = ((duration * 60 - timeLeft) / (duration * 60)) * 100
 
+  // Basketball workout display
+  if (workoutType === 'Basketball') {
+    return (
+      <div className="text-center space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Basketball Workout for {mood} 🏀
+          </h2>
+          <p className="text-gray-600 mb-3">
+            Keep going! You've got this!
+          </p>
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
+            <p className="text-xs text-gray-600">{workoutRecommendation}</p>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="w-48 h-48 mx-auto flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-8xl animate-basketball-bounce mb-2">
+                🏀
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={onStop}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Stop Workout
+          </button>
+          
+          <button
+            onClick={onStopAndReturnHome}
+            className="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+          >
+            Stop Workout & Return to Home
+          </button>
+          
+          <div className="text-sm text-gray-500">
+            {isRunning ? 'Workout is running...' : 'Workout completed!'}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Regular timer display for other workout types
   return (
     <div className="text-center space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
-          Running for {mood} 🏃‍♂️
+          {workoutType} Workout for {mood} 💪
         </h2>
-        <p className="text-gray-600">
+        <p className="text-gray-600 mb-3">
           Keep going! You've got this!
         </p>
+        <div className="bg-blue-50 p-3 rounded-lg">
+          <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
+          <p className="text-xs text-gray-600">{workoutRecommendation}</p>
+        </div>
       </div>
 
       <div className="relative">
@@ -85,11 +140,18 @@ const RunTimer = ({ duration, mood, onComplete, onStop }) => {
           onClick={onStop}
           className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
         >
-          Stop Run
+          Stop Workout
+        </button>
+        
+        <button
+          onClick={onStopAndReturnHome}
+          className="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200"
+        >
+          Stop Workout & Return to Home
         </button>
         
         <div className="text-sm text-gray-500">
-          {isRunning ? 'Timer is running...' : 'Run completed!'}
+          {isRunning ? 'Workout is running...' : 'Workout completed!'}
         </div>
       </div>
     </div>

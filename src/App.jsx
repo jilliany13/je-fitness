@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import WorkoutTypeSelector from './components/WorkoutTypeSelector'
 import MoodSelector from './components/MoodSelector'
 import RunTimer from './components/RunTimer'
 import PostRunReflection from './components/PostRunReflection'
@@ -6,9 +7,11 @@ import StreakTracker from './components/StreakTracker'
 import Confetti from './components/Confetti'
 
 function App() {
-  const [currentView, setCurrentView] = useState('mood-selector') // mood-selector, timer, reflection
+  const [currentView, setCurrentView] = useState('workout-selector') // workout-selector, mood-selector, timer, reflection
+  const [selectedWorkoutType, setSelectedWorkoutType] = useState(null)
   const [selectedMood, setSelectedMood] = useState(null)
   const [runDuration, setRunDuration] = useState(0)
+  const [workoutRecommendation, setWorkoutRecommendation] = useState('')
   const [streak, setStreak] = useState(0)
   const [showConfetti, setShowConfetti] = useState(false)
 
@@ -20,9 +23,15 @@ function App() {
     }
   }, [])
 
-  const handleMoodSelect = (mood, duration) => {
+  const handleWorkoutTypeSelect = (workoutType) => {
+    setSelectedWorkoutType(workoutType)
+    setCurrentView('mood-selector')
+  }
+
+  const handleMoodSelect = (mood, duration, recommendation) => {
     setSelectedMood(mood)
     setRunDuration(duration)
+    setWorkoutRecommendation(recommendation)
     setCurrentView('timer')
   }
 
@@ -31,57 +40,78 @@ function App() {
   }
 
   const handleReflectionComplete = (postRunMood) => {
-    // Save run data to localStorage
+    // Save workout data to localStorage
     const today = new Date().toDateString()
-    const runData = {
+    const workoutData = {
       date: today,
+      workoutType: selectedWorkoutType,
       preRunMood: selectedMood,
       postRunMood: postRunMood,
-      duration: runDuration
+      duration: runDuration,
+      recommendation: workoutRecommendation
     }
     
-    const existingRuns = JSON.parse(localStorage.getItem('moodRunHistory') || '[]')
-    existingRuns.push(runData)
-    localStorage.setItem('moodRunHistory', JSON.stringify(existingRuns))
+    const existingWorkouts = JSON.parse(localStorage.getItem('moodRunHistory') || '[]')
+    existingWorkouts.push(workoutData)
+    localStorage.setItem('moodRunHistory', JSON.stringify(existingWorkouts))
 
     // Update streak
     const yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
     const yesterdayString = yesterday.toDateString()
     
-    const lastRunDate = localStorage.getItem('lastRunDate')
+    const lastWorkoutDate = localStorage.getItem('lastWorkoutDate')
     let newStreak = streak
     
-    if (lastRunDate === today) {
-      // Already ran today, don't increment streak
-    } else if (lastRunDate === yesterdayString) {
-      // Ran yesterday, increment streak
+    if (lastWorkoutDate === today) {
+      // Already worked out today, don't increment streak
+    } else if (lastWorkoutDate === yesterdayString) {
+      // Worked out yesterday, increment streak
       newStreak = streak + 1
-    } else if (lastRunDate !== today) {
-      // Didn't run yesterday, reset streak to 1
+    } else if (lastWorkoutDate !== today) {
+      // Didn't workout yesterday, reset streak to 1
       newStreak = 1
     }
     
     setStreak(newStreak)
     localStorage.setItem('moodRunStreak', newStreak.toString())
-    localStorage.setItem('lastRunDate', today)
+    localStorage.setItem('lastWorkoutDate', today)
 
     // Show confetti
     setShowConfetti(true)
     setTimeout(() => setShowConfetti(false), 3000)
 
-    // Reset to mood selector
+    // Reset to workout selector
     setTimeout(() => {
-      setCurrentView('mood-selector')
+      setCurrentView('workout-selector')
+      setSelectedWorkoutType(null)
       setSelectedMood(null)
       setRunDuration(0)
+      setWorkoutRecommendation('')
     }, 3000)
   }
 
-  const handleStopRun = () => {
+  const handleStopWorkout = () => {
     setCurrentView('mood-selector')
     setSelectedMood(null)
     setRunDuration(0)
+    setWorkoutRecommendation('')
+  }
+
+  const handleStopAndReturnHome = () => {
+    setCurrentView('workout-selector')
+    setSelectedWorkoutType(null)
+    setSelectedMood(null)
+    setRunDuration(0)
+    setWorkoutRecommendation('')
+  }
+
+  const handleReturnHome = () => {
+    setCurrentView('workout-selector')
+    setSelectedWorkoutType(null)
+    setSelectedMood(null)
+    setRunDuration(0)
+    setWorkoutRecommendation('')
   }
 
   return (
@@ -101,22 +131,33 @@ function App() {
           */}
         </h1>
         <p className="text-white text-center mb-8 opacity-90">
-          Run based on how you feel
+          Workout based on how you feel
         </p>
 
         <StreakTracker streak={streak} />
 
         <div className="bg-white rounded-2xl shadow-xl p-6">
+          {currentView === 'workout-selector' && (
+            <WorkoutTypeSelector onWorkoutTypeSelect={handleWorkoutTypeSelect} />
+          )}
+          
           {currentView === 'mood-selector' && (
-            <MoodSelector onMoodSelect={handleMoodSelect} />
+            <MoodSelector 
+              onMoodSelect={handleMoodSelect}
+              workoutType={selectedWorkoutType}
+              onReturnHome={handleReturnHome}
+            />
           )}
           
           {currentView === 'timer' && (
             <RunTimer 
               duration={runDuration}
               mood={selectedMood}
+              workoutType={selectedWorkoutType}
+              workoutRecommendation={workoutRecommendation}
               onComplete={handleTimerComplete}
-              onStop={handleStopRun}
+              onStop={handleStopWorkout}
+              onStopAndReturnHome={handleStopAndReturnHome}
             />
           )}
           
