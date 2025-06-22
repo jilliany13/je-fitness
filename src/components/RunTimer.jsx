@@ -4,6 +4,47 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
   const [timeLeft, setTimeLeft] = useState(duration * 60) // Convert to seconds
   const [isRunning, setIsRunning] = useState(true)
 
+  const getMotivationalMessage = (workoutType, mood) => {
+    const messages = {
+      'Gym': {
+        'Low Energy': 'Small steps lead to big changes! 💪',
+        'Meh': 'Push through, you\'ll feel amazing after! 🔥',
+        'Feeling Good': 'You\'re in the zone, keep it up! ⚡',
+        'Energized': 'Crushing it! Your future self thanks you! 💯',
+        'Fired Up': 'Unstoppable! You\'re a beast! 🦁'
+      },
+      'Running': {
+        'Low Energy': 'Every step counts, you\'re doing great! 🏃‍♀️',
+        'Meh': 'Find your rhythm and keep moving! 🎵',
+        'Feeling Good': 'You\'re flying! Keep that pace! ✈️',
+        'Energized': 'Speed demon! You\'re on fire! 🔥',
+        'Fired Up': 'Unleash the beast within! 🐆'
+      },
+      'Basketball': {
+        'Low Energy': 'Dribble your way to energy! 🏀',
+        'Meh': 'Shoot for greatness! 🎯',
+        'Feeling Good': 'You\'re in the zone, nothing but net! 🏀',
+        'Energized': 'Dunk on your doubts! 💪',
+        'Fired Up': 'You\'re unstoppable on the court! 🏆'
+      },
+      'Volleyball': {
+        'Low Energy': 'Serve up some energy! 🏐',
+        'Meh': 'Spike your way to feeling great! 💥',
+        'Feeling Good': 'You\'re setting up for success! 🏐',
+        'Energized': 'Block out negativity! 🛡️',
+        'Fired Up': 'You\'re the MVP of this court! 🏆'
+      },
+      'Bowling': {
+        'Low Energy': 'Roll your way to feeling better! 🎳',
+        'Meh': 'Strike out those bad vibes! ⚡',
+        'Feeling Good': 'You\'re on a roll! 🎳',
+        'Energized': 'Spare no effort! 💪',
+        'Fired Up': 'Perfect game energy! 🏆'
+      }
+    }
+    return messages[workoutType]?.[mood] || 'Keep going! You\'ve got this! 💪'
+  }
+
   useEffect(() => {
     if (!isRunning) return
 
@@ -39,11 +80,11 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
             Basketball Workout for {mood} 🏀
           </h2>
           <p className="text-gray-600 mb-3">
-            Keep going! You've got this!
+            {getMotivationalMessage(workoutType, mood)}
           </p>
           <div className="bg-blue-50 p-3 rounded-lg">
             <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-            <p className="text-xs text-gray-600">{workoutRecommendation}</p>
+            <p className="text-base text-gray-600">{workoutRecommendation}</p>
           </div>
         </div>
 
@@ -71,10 +112,6 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
           >
             Stop Workout & Return to Home
           </button>
-          
-          <div className="text-sm text-gray-500">
-            {isRunning ? 'Workout is running...' : 'Workout completed!'}
-          </div>
         </div>
       </div>
     )
@@ -89,11 +126,11 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
             Volleyball Workout for {mood} 🏐
           </h2>
           <p className="text-gray-600 mb-3">
-            Keep going! You've got this!
+            {getMotivationalMessage(workoutType, mood)}
           </p>
           <div className="bg-blue-50 p-3 rounded-lg">
             <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-            <p className="text-xs text-gray-600">{workoutRecommendation}</p>
+            <p className="text-base text-gray-600">{workoutRecommendation}</p>
           </div>
         </div>
 
@@ -124,10 +161,6 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
           >
             Stop Workout & Return to Home
           </button>
-          
-          <div className="text-sm text-gray-500">
-            {isRunning ? 'Workout is running...' : 'Workout completed!'}
-          </div>
         </div>
       </div>
     )
@@ -142,11 +175,11 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
             Gym Workout for {mood} 🏋️‍♂️
           </h2>
           <p className="text-gray-600 mb-3">
-            Keep going! You've got this!
+            {getMotivationalMessage(workoutType, mood)}
           </p>
           <div className="bg-blue-50 p-3 rounded-lg">
             <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-            <p className="text-xs text-gray-600">{workoutRecommendation}</p>
+            <p className="text-base text-gray-600">{workoutRecommendation}</p>
           </div>
         </div>
 
@@ -174,10 +207,6 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
           >
             Stop Workout & Return to Home
           </button>
-          
-          <div className="text-sm text-gray-500">
-            {isRunning ? 'Workout is running...' : 'Workout completed!'}
-          </div>
         </div>
       </div>
     )
@@ -192,11 +221,11 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
             Bowling Workout for {mood} 🎳
           </h2>
           <p className="text-gray-600 mb-3">
-            Keep going! You've got this!
+            {getMotivationalMessage(workoutType, mood)}
           </p>
           <div className="bg-blue-50 p-3 rounded-lg">
             <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-            <p className="text-xs text-gray-600">{workoutRecommendation}</p>
+            <p className="text-base text-gray-600">{workoutRecommendation}</p>
           </div>
         </div>
 
@@ -227,10 +256,6 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
           >
             Stop Workout & Return to Home
           </button>
-          
-          <div className="text-sm text-gray-500">
-            {isRunning ? 'Workout is running...' : 'Workout completed!'}
-          </div>
         </div>
       </div>
     )
@@ -244,11 +269,11 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
           {workoutType} Workout for {mood} 💪
         </h2>
         <p className="text-gray-600 mb-3">
-          Keep going! You've got this!
+          {getMotivationalMessage(workoutType, mood)}
         </p>
         <div className="bg-blue-50 p-3 rounded-lg">
           <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-          <p className="text-xs text-gray-600">{workoutRecommendation}</p>
+          <p className="text-base text-gray-600">{workoutRecommendation}</p>
         </div>
       </div>
 
@@ -305,10 +330,6 @@ const RunTimer = ({ duration, mood, workoutType, workoutRecommendation, onComple
         >
           Stop Workout & Return to Home
         </button>
-        
-        <div className="text-sm text-gray-500">
-          {isRunning ? 'Workout is running...' : 'Workout completed!'}
-        </div>
       </div>
     </div>
   )

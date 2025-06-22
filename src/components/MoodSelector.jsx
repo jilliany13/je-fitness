@@ -2,35 +2,35 @@ const MoodSelector = ({ onMoodSelect, workoutType, onReturnHome }) => {
   const getWorkoutRecommendations = (mood, workoutType) => {
     const recommendations = {
       'Low Energy': {
-        'Gym': '10 min treadmill walk, 5 min stretching, 3 sets of 10 bodyweight squats, 2 sets of 5 push-ups, 5 min cool-down',
+        'Gym': '10 min treadmill walk, 3 sets of 10 bodyweight squats, 2 sets of 5 push-ups, 5 min stretching',
         'Running': '5-10 min walk, light jogging, gentle stretching',
         'Basketball': 'Light dribbling drills, shooting practice, gentle warm-up',
         'Volleyball': 'Light passing drills, gentle serving practice, warm-up stretches',
         'Bowling': 'Light practice throws, focus on form and grip, gentle wrist stretches, 2-3 games with breaks, practice spares, focus on accuracy over power'
       },
       'Meh': {
-        'Gym': '15 min elliptical, 3x10 leg press (light weight), 3x8 lat pulldowns, 3x10 shoulder press, 2x10 bicep curls, 5 min stretching',
+        'Gym': '15 min elliptical, 3x10 leg press, 3x8 lat pulldowns, 3x10 shoulder press, 2x10 bicep curls, 5 min stretching',
         'Running': '15 min steady pace run, interval walking',
         'Basketball': 'Shooting drills, light scrimmage, ball handling practice',
         'Volleyball': 'Passing drills, serving practice, light team drills',
         'Bowling': 'Practice spares and splits, focus on accuracy and consistency, 3-4 games, work on approach and release technique, practice different oil patterns, light stretching between games'
       },
       'Feeling Good': {
-        'Gym': '20 min cardio (treadmill/elliptical), 4x8 bench press, 4x10 leg press, 3x10 lat pulldowns, 3x12 shoulder press, 3x15 bicep curls, 3x15 tricep extensions, 3x10 leg extensions, 3x10 leg curls',
+        'Gym': '20 min cardio, 4x8 bench press, 4x10 leg press, 3x10 lat pulldowns, 3x12 shoulder press, 3x15 bicep curls, 3x10 leg extensions',
         'Running': '20 min run with intervals, hill training',
         'Basketball': 'Full court drills, shooting practice, defensive work',
         'Volleyball': 'Full court drills, serving practice, blocking drills, team scrimmage',
         'Bowling': 'Full game practice, focus on strikes and spares, 4-5 games, work on hook shots and curve balls, practice spare conversions, focus on lane reading and oil pattern adjustment, moderate intensity with strategic breaks'
       },
       'Energized': {
-        'Gym': '30 min intense cardio, 5x5 heavy bench press, 5x8 heavy leg press, 4x10 lat pulldowns, 4x12 shoulder press, 4x15 bicep curls, 4x15 tricep extensions, 4x12 leg extensions, 4x12 leg curls, 3x10 deadlifts, 3x10 squats',
+        'Gym': '30 min intense cardio, 5x5 heavy bench press, 5x8 heavy leg press, 4x10 lat pulldowns, 4x12 shoulder press, 4x15 bicep curls, 4x12 leg extensions, 3x10 deadlifts',
         'Running': '30 min intense run, sprint intervals, hill repeats',
         'Basketball': 'Intense scrimmage, full court drills, competitive play',
         'Volleyball': 'Intense team scrimmage, advanced serving drills, competitive play',
         'Bowling': 'Competitive practice, focus on advanced techniques, 5 games maximum, work on power shots and strike conversions, practice difficult spare combinations, focus on mental game and pressure situations, high intensity with strategic rest periods'
       },
       'Fired Up': {
-        'Gym': '45 min cardio (HIIT), 5x5 heavy bench press, 5x8 heavy leg press, 5x10 lat pulldowns, 5x12 shoulder press, 5x15 bicep curls, 5x15 tricep extensions, 5x12 leg extensions, 5x12 leg curls, 4x8 deadlifts, 4x10 squats, 3x10 pull-ups, 3x10 dips, 3x15 calf raises',
+        'Gym': '45 min cardio (HIIT), 5x5 heavy bench press, 5x8 heavy leg press, 5x10 lat pulldowns, 5x12 shoulder press, 5x15 bicep curls, 4x8 deadlifts, 4x10 squats',
         'Running': '45 min long distance run, tempo training',
         'Basketball': 'Full game simulation, advanced drills, endurance training',
         'Volleyball': 'Full match simulation, advanced team drills, endurance training',
