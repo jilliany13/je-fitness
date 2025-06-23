@@ -43,13 +43,23 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
 
   const getWorkoutTypeEmoji = (type) => {
     const emojis = {
-      'Running': '🏃‍♀️',
-      'Gym': '💪',
+      'Gym': '🏋️‍♂️',
+      'Running': '🏃‍♂️',
       'Basketball': '🏀',
+      'Swimming': '🏊‍♂️',
+      'Tennis': '🎾',
       'Volleyball': '🏐',
-      'Bowling': '🎳'
+      'Boxing': '🥊',
+      'Bowling': '🎳',
+      'Yoga': '🧘‍♀️',
+      'Soccer': '⚽',
+      'Table Tennis': '🏓',
+      'Cycling': '🚴‍♂️',
+      'Badminton': '🏸',
+      'Walking': '🏃‍♀️',
+      'CrossFit': '🏋️‍♀️'
     };
-    return emojis[type] || '🏃‍♀️';
+    return emojis[type] || '💪'; // Default to 💪 if type not found
   };
 
   const getMoodEmoji = (mood) => {

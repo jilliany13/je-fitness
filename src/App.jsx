@@ -200,7 +200,7 @@ function App() {
                   ) : (
                     <button
                       onClick={handleShowLogin}
-                      className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
+                      className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 text-sm"
                     >
                       Log In
                     </button>
