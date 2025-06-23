@@ -176,7 +176,7 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
           </button>
           <button
             onClick={onLogout}
-            className="text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
+            className="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200 text-sm"
           >
             Sign Out
           </button>

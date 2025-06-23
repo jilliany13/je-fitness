@@ -31,6 +31,11 @@ function App() {
     return () => unsubscribe()
   }, [])
 
+  // Scroll to top when view changes
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [currentView])
+
   // Load streak from localStorage on component mount
   // useEffect(() => {
   //   const savedStreak = localStorage.getItem('moodRunStreak')
@@ -145,7 +150,7 @@ function App() {
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <h1 className="text-4xl font-bold text-white text-center mb-2 mt-8">
-            J&E Fitness 👟
+            J&E Fitness
           {/* You can change this to:
           🏃‍♀️ J&E Fitness
           💪 Mood Workout
@@ -159,15 +164,13 @@ function App() {
           <p className="text-white opacity-90">
             Workout based on how you feel
           </p>
-          {user && (
-            <button
-              onClick={handleAboutClick}
-              className="text-white opacity-70 hover:opacity-100 transition-opacity duration-200 text-sm"
-              title="About J&E Fitness"
-            >
-              ⓘ
-            </button>
-          )}
+          <button
+            onClick={handleAboutClick}
+            className="text-white opacity-70 hover:opacity-100 transition-opacity duration-200 text-sm"
+            title="About J&E Fitness"
+          >
+            ⓘ
+          </button>
         </div>
 
         {/* StreakTracker commented out for now */}
@@ -186,13 +189,13 @@ function App() {
                     <>
                       <button
                         onClick={handleShowDashboard}
-                        className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
+                        className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 text-sm"
                       >
                         Dashboard
                       </button>
                       <button
                         onClick={handleLogout}
-                        className="text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
+                        className="bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 text-sm"
                       >
                         Sign Out
                       </button>
