@@ -202,9 +202,9 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <h1 className="text-4xl font-bold text-white text-center mb-2 mt-8">
-            J&E Fitness
+      <div className="w-full max-w-md mt-8">
+        <h1 className="text-4xl font-bold text-white text-center mb-2">
+          J&E Fitness
           {/* You can change this to:
           🏃‍♀️ J&E Fitness
           💪 Mood Workout

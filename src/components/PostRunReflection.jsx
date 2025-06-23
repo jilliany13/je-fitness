@@ -24,7 +24,7 @@ const PostRunReflection = ({
 
   const moodOptions = [
     { value: 'Much Better', emoji: '😄', description: 'Feeling amazing!', color: 'green' },
-    { value: 'Good', emoji: '😊', description: 'Ready for a solid workout', color: 'blue' },
+    { value: 'Better', emoji: '😊', description: 'Improved Mood', color: 'blue' },
     { value: 'Same', emoji: '😐', description: 'No change', color: 'yellow' },
     { value: 'Worse', emoji: '😔', description: 'Feeling down', color: 'orange' }
   ];
