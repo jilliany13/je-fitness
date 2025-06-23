@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { realtimeAuthService } from '../services/realtimeAuthService';
+import { captchaService } from '../services/captchaService';
 
 const Signup = ({ onSwitchToLogin, onSignupSuccess, onBackToWorkout }) => {
   const [email, setEmail] = useState('');
@@ -7,6 +8,8 @@ const Signup = ({ onSwitchToLogin, onSignupSuccess, onBackToWorkout }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [captcha, setCaptcha] = useState(captchaService.generateSimpleCaptcha());
+  const [captchaAnswer, setCaptchaAnswer] = useState('');
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -21,6 +24,14 @@ const Signup = ({ onSwitchToLogin, onSignupSuccess, onBackToWorkout }) => {
     // Validate password length
     if (password.length < 6) {
       setError('Password must be at least 6 characters long.');
+      return;
+    }
+
+    // Verify captcha
+    if (captchaAnswer !== captcha.answer) {
+      setError('Please solve the captcha correctly.');
+      setCaptcha(captchaService.generateSimpleCaptcha());
+      setCaptchaAnswer('');
       return;
     }
 
@@ -44,6 +55,9 @@ const Signup = ({ onSwitchToLogin, onSignupSuccess, onBackToWorkout }) => {
         default:
           setError('Failed to create account. Please try again.');
       }
+      // Generate new captcha on error
+      setCaptcha(captchaService.generateSimpleCaptcha());
+      setCaptchaAnswer('');
     } finally {
       setLoading(false);
     }
@@ -98,6 +112,34 @@ const Signup = ({ onSwitchToLogin, onSignupSuccess, onBackToWorkout }) => {
             onChange={(e) => setConfirmPassword(e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
             placeholder="Confirm your password"
+            required
+          />
+        </div>
+
+        {/* Captcha Section */}
+        <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Security Check 🔒
+          </label>
+          <div className="flex items-center space-x-3">
+            <span className="text-gray-600 font-medium">{captcha.question}</span>
+            <button
+              type="button"
+              onClick={() => {
+                setCaptcha(captchaService.generateSimpleCaptcha());
+                setCaptchaAnswer('');
+              }}
+              className="text-blue-600 hover:text-blue-700 text-sm"
+            >
+              ↻
+            </button>
+          </div>
+          <input
+            type="text"
+            value={captchaAnswer}
+            onChange={(e) => setCaptchaAnswer(e.target.value)}
+            className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Enter your answer"
             required
           />
         </div>
