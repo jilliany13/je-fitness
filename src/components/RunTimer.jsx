@@ -111,7 +111,7 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
       <div className="text-center space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Basketball Workout for {mood} 🏀
+            Basketball 🏀
           </h2>
           <p className="text-gray-600 mb-3">
             {getMotivationalMessage(workoutType, mood)}
@@ -163,7 +163,7 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
       <div className="text-center space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Volleyball Workout for {mood} 🏐
+            Volleyball 🏐
           </h2>
           <p className="text-gray-600 mb-3">
             {getMotivationalMessage(workoutType, mood)}
@@ -218,7 +218,7 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
       <div className="text-center space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Gym Workout for {mood} 🏋️‍♂️
+            Gym 🏋️‍♂️
           </h2>
           <p className="text-gray-600 mb-3">
             {getMotivationalMessage(workoutType, mood)}
@@ -270,7 +270,7 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
       <div className="text-center space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Bowling Workout for {mood} 🎳
+            Bowling 🎳
           </h2>
           <p className="text-gray-600 mb-3">
             {getMotivationalMessage(workoutType, mood)}
@@ -325,7 +325,7 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
       <div className="text-center space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Soccer Workout for {mood} ⚽
+            Soccer ⚽
           </h2>
           <p className="text-gray-600 mb-3">
             {getMotivationalMessage(workoutType, mood)}
@@ -377,7 +377,7 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
       <div className="text-center space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Tennis Workout for {mood} 🎾
+            Tennis 🎾
           </h2>
           <p className="text-gray-600 mb-3">
             {getMotivationalMessage(workoutType, mood)}
@@ -429,7 +429,7 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
       <div className="text-center space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Table Tennis Workout for {mood} 🏓
+            Table Tennis 🏓
           </h2>
           <p className="text-gray-600 mb-3">
             {getMotivationalMessage(workoutType, mood)}
@@ -481,7 +481,7 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
       <div className="text-center space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Badminton Workout for {mood} 🏸
+            Badminton 🏸
           </h2>
           <p className="text-gray-600 mb-3">
             {getMotivationalMessage(workoutType, mood)}
@@ -533,7 +533,7 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
       <div className="text-center space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Swimming Workout for {mood} 🏊‍♂️
+            Swimming ��‍♂️
           </h2>
           <p className="text-gray-600 mb-3">
             {getMotivationalMessage(workoutType, mood)}
@@ -585,7 +585,7 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
       <div className="text-center space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Cycling Workout for {mood} 🚴‍♂️
+            Cycling 🚴‍♂️
           </h2>
           <p className="text-gray-600 mb-3">
             {getMotivationalMessage(workoutType, mood)}
@@ -637,7 +637,7 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
       <div className="text-center space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Yoga Workout for {mood} 🧘‍♀️
+            Yoga 🧘‍♀️
           </h2>
           <p className="text-gray-600 mb-3">
             {getMotivationalMessage(workoutType, mood)}
@@ -689,7 +689,7 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
       <div className="text-center space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Boxing Workout for {mood} 🥊
+            Boxing 🥊
           </h2>
           <p className="text-gray-600 mb-3">
             {getMotivationalMessage(workoutType, mood)}
@@ -741,7 +741,7 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
       <div className="text-center space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Walking Workout for {mood} 🚶‍♀️
+            Walking 🚶‍♀️
           </h2>
           <p className="text-gray-600 mb-3">
             {getMotivationalMessage(workoutType, mood)}
@@ -793,7 +793,7 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
       <div className="text-center space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            CrossFit Workout for {mood} 🏋️‍♀️
+            CrossFit 🏋️‍♀️
           </h2>
           <p className="text-gray-600 mb-3">
             {getMotivationalMessage(workoutType, mood)}
@@ -844,7 +844,7 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
     <div className="text-center space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
-          {workoutType} Workout for {mood} 💪
+          {workoutType} 💪
         </h2>
         <p className="text-gray-600 mb-3">
           {getMotivationalMessage(workoutType, mood)}

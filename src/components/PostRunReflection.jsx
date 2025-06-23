@@ -29,6 +29,24 @@ const PostRunReflection = ({
     { value: 'Worse', emoji: '😔', description: 'Feeling down', color: 'orange' }
   ];
 
+  // Short motivational sentences
+  const motivationalMessages = [
+    "Every finish line is the start of a new journey.",
+    "You did it! Keep building your momentum.",
+    "Small wins add up to big results.",
+    "Progress is progress, no matter how small.",
+    "Consistency beats intensity every time.",
+    "You're one step closer to your goals.",
+    "Celebrate your effort today!",
+    "Great things are done by a series of small things brought together.",
+    "You showed up and that's what matters most.",
+    "Keep moving forward—your future self will thank you."
+  ];
+  const [motivation, setMotivation] = useState("");
+  useEffect(() => {
+    setMotivation(motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)]);
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!postRunMood) {
@@ -156,9 +174,7 @@ const PostRunReflection = ({
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
           Great job! 🎉
         </h2>
-        <p className="text-gray-600 mb-4">
-          You started feeling "{preRunMood}" and completed your run.
-        </p>
+        <p className="text-gray-600 mb-4 text-center">{motivation}</p>
         <p className="text-lg font-semibold text-gray-800">
           How do you feel now?
         </p>
