@@ -13,91 +13,91 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
     const messages = {
       'Gym': {
         'Meh': 'Small steps lead to big changes! 💪',
-        'Feeling Good': 'Push through, you\'ll feel amazing after! 🔥',
+        'Good': 'Push through, you\'ll feel amazing after! 🔥',
         'Energized': 'You\'re in the zone, keep it up! ⚡',
         'Fired Up': 'Crushing it! Your future self thanks you! 💯'
       },
       'Running': {
         'Meh': 'Every step counts, you\'re doing great! 🏃‍♀️',
-        'Feeling Good': 'Find your rhythm and keep moving! 🎵',
+        'Good': 'Find your rhythm and keep moving! 🎵',
         'Energized': 'You\'re flying! Keep that pace! ✈️',
         'Fired Up': 'Speed demon! You\'re on fire! 🔥'
       },
       'Basketball': {
         'Meh': 'Dribble your way to energy! 🏀',
-        'Feeling Good': 'Shoot for greatness! 🎯',
+        'Good': 'Shoot for greatness! 🎯',
         'Energized': 'You\'re in the zone, nothing but net! 🏀',
         'Fired Up': 'Dunk on your doubts! 💪'
       },
       'Volleyball': {
         'Meh': 'Serve up some energy! 🏐',
-        'Feeling Good': 'Spike your way to feeling great! 💥',
+        'Good': 'Spike your way to feeling great! 💥',
         'Energized': 'You\'re setting up for success! 🏐',
         'Fired Up': 'Block out negativity! 🛡️'
       },
       'Bowling': {
         'Meh': 'Roll your way to feeling better! 🎳',
-        'Feeling Good': 'Strike out those bad vibes! ⚡',
+        'Good': 'Strike out those bad vibes! ⚡',
         'Energized': 'You\'re on a roll! 🎳',
         'Fired Up': 'Spare no effort! 💪'
       },
       'Soccer': {
         'Meh': 'Kick your way to energy! ⚽',
-        'Feeling Good': 'Score some goals and feel great! 🥅',
+        'Good': 'Score some goals and feel great! 🥅',
         'Energized': 'You\'re dribbling through life! ⚽',
         'Fired Up': 'Strike with power! 💥'
       },
       'Tennis': {
         'Meh': 'Serve your way to energy! 🎾',
-        'Feeling Good': 'Rally for greatness! 🎾',
+        'Good': 'Rally for greatness! 🎾',
         'Energized': 'You\'re in the zone, ace it! 🎾',
         'Fired Up': 'Smash through barriers! 💪'
       },
       'Table Tennis': {
         'Meh': 'Ping your way to energy! 🏓',
-        'Feeling Good': 'Pong for greatness! 🏓',
+        'Good': 'Pong for greatness! 🏓',
         'Energized': 'You\'re in the zone, spin it! 🏓',
         'Fired Up': 'Smash through limits! 💪'
       },
       'Badminton': {
         'Meh': 'Shuttle your way to energy! 🏸',
-        'Feeling Good': 'Smash for greatness! 🏸',
+        'Good': 'Smash for greatness! 🏸',
         'Energized': 'You\'re in the zone, drop it! 🏸',
         'Fired Up': 'Clear through obstacles! 💪'
       },
       'Swimming': {
         'Meh': 'Swim your way to energy! 🏊‍♂️',
-        'Feeling Good': 'Dive into greatness! 🏊‍♂️',
+        'Good': 'Dive into greatness! 🏊‍♂️',
         'Energized': 'You\'re in the zone, stroke it! 🏊‍♂️',
         'Fired Up': 'Splash through limits! 💪'
       },
       'Cycling': {
         'Meh': 'Pedal your way to energy! 🚴‍♂️',
-        'Feeling Good': 'Ride to greatness! 🚴‍♂️',
+        'Good': 'Ride to greatness! 🚴‍♂️',
         'Energized': 'You\'re in the zone, spin it! 🚴‍♂️',
         'Fired Up': 'Race through life! 💨'
       },
       'Yoga': {
         'Meh': 'Flow your way to peace! 🧘‍♀️',
-        'Feeling Good': 'Stretch into greatness! 🧘‍♀️',
+        'Good': 'Stretch into greatness! 🧘‍♀️',
         'Energized': 'You\'re in the zone, breathe! 🧘‍♀️',
         'Fired Up': 'Find your inner strength! 💪'
       },
       'Boxing': {
         'Meh': 'Jab your way to energy! 🥊',
-        'Feeling Good': 'Punch for greatness! 🥊',
+        'Good': 'Punch for greatness! 🥊',
         'Energized': 'You\'re in the zone, hook it! 🥊',
         'Fired Up': 'Knock out your limits! 💥'
       },
       'Walking': {
         'Meh': 'Step your way to energy! 🚶‍♀️',
-        'Feeling Good': 'Walk to greatness! 🚶‍♀️',
+        'Good': 'Walk to greatness! 🚶‍♀️',
         'Energized': 'You\'re in the zone, stride it! 🚶‍♀️',
         'Fired Up': 'March through life! 💪'
       },
       'CrossFit': {
         'Meh': 'WOD your way to energy! 🏋️‍♀️',
-        'Feeling Good': 'Lift for greatness! 🏋️‍♀️',
+        'Good': 'Lift for greatness! 🏋️‍♀️',
         'Energized': 'You\'re in the zone, crush it! 🏋️‍♀️',
         'Fired Up': 'Dominate your limits! 💪'
       }

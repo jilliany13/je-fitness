@@ -44,12 +44,66 @@ function App() {
   //   }
   // }, [])
 
-  const handleLoginSuccess = () => {
-    setCurrentView('dashboard')
+  // Listen for trigger-signup and trigger-login events to switch views from PostRunReflection
+  useEffect(() => {
+    const handleSignup = () => setCurrentView('signup');
+    const handleLogin = () => setCurrentView('login');
+    window.addEventListener('trigger-signup', handleSignup);
+    window.addEventListener('trigger-login', handleLogin);
+    return () => {
+      window.removeEventListener('trigger-signup', handleSignup);
+      window.removeEventListener('trigger-login', handleLogin);
+    };
+  }, []);
+
+  // After login/signup, if pendingWorkout exists, go to reflection page and restore state
+  useEffect(() => {
+    if ((currentView === 'dashboard' || currentView === 'workout-selector') && localStorage.getItem('pendingWorkout')) {
+      setCurrentView('reflection');
+    }
+  }, [currentView]);
+
+  const handleLoginSuccess = async () => {
+    // If there is a pending workout, save it and go to dashboard
+    const pending = localStorage.getItem('pendingWorkout');
+    if (pending) {
+      try {
+        const data = JSON.parse(pending);
+        // Save workout using the service
+        if (data && data.workoutType && data.preRunMood) {
+          await realtimeAuthService.saveWorkout({
+            workoutType: data.workoutType,
+            preRunMood: data.preRunMood,
+            postRunMood: data.postRunMood,
+            notes: data.notes,
+            timestamp: new Date().toISOString()
+          });
+        }
+      } catch {}
+      localStorage.removeItem('pendingWorkout');
+    }
+    setCurrentView('dashboard');
   }
 
-  const handleSignupSuccess = () => {
-    setCurrentView('dashboard')
+  const handleSignupSuccess = async () => {
+    // If there is a pending workout, save it and go to dashboard
+    const pending = localStorage.getItem('pendingWorkout');
+    if (pending) {
+      try {
+        const data = JSON.parse(pending);
+        if (data && data.workoutType && data.preRunMood) {
+          await realtimeAuthService.saveWorkout({
+            workoutType: data.workoutType,
+            preRunMood: data.preRunMood,
+            postRunMood: data.postRunMood,
+            notes: data.notes,
+            timestamp: new Date().toISOString()
+          });
+        }
+      } catch {}
+      localStorage.removeItem('pendingWorkout');
+    }
+    setCurrentView('dashboard');
   }
 
   const handleLogout = async () => {

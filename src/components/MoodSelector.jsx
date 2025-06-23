@@ -22,7 +22,7 @@ const MoodSelector = ({ onMoodSelect, workoutType, onReturnHome }) => {
         'Walking': '20-30 min gentle walk, focus on posture and breathing',
         'CrossFit': 'Light bodyweight exercises, 10-15 min session, focus on form over intensity'
       },
-      'Feeling Good': {
+      'Good': {
         'Gym': '15 min elliptical, 3x10 leg press, 3x8 lat pulldowns, 3x10 shoulder press, 2x10 bicep curls, 5 min stretching',
         'Running': '15 min steady pace run, interval walking',
         'Basketball': 'Shooting drills, light scrimmage, ball handling practice',
@@ -74,7 +74,7 @@ const MoodSelector = ({ onMoodSelect, workoutType, onReturnHome }) => {
         'CrossFit': 'Maximum intensity WOD, 45-50 min session, advanced movements'
       }
     }
-    return recommendations[mood]?.[workoutType] || 'Custom workout based on your mood'
+    return (recommendations[mood] || recommendations['Good'])?.[workoutType] || 'Custom workout based on your mood';
   }
 
   const moods = [
@@ -87,7 +87,7 @@ const MoodSelector = ({ onMoodSelect, workoutType, onReturnHome }) => {
     },
     {
       emoji: '😊',
-      label: 'Feeling Good',
+      label: 'Good',
       description: 'Ready for a solid workout',
       baseColor: 'bg-green-100 border-green-300',
       hoverColor: 'hover:bg-green-200'

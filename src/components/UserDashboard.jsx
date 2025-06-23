@@ -66,7 +66,7 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
     const emojis = {
       'Low Energy': '😴',
       'Meh': '😐',
-      'Feeling Good': '😊',
+      'Good': '😊',
       'Energized': '⚡',
       'Fired Up': '🔥'
     };
@@ -168,15 +168,8 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
         <h2 className="text-2xl font-bold text-gray-800">Your Dashboard 📊</h2>
         <div className="flex items-center space-x-2">
           <button
-            onClick={fetchUserData}
-            className="text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
-            title="Refresh data"
-          >
-            🔄
-          </button>
-          <button
             onClick={onLogout}
-            className="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200 text-sm"
+            className="bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 text-sm"
           >
             Sign Out
           </button>
