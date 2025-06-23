@@ -17,12 +17,14 @@ const PostRunReflection = ({
   const [selectedMood, setSelectedMood] = useState(null)
   const supportsHover = useHoverSupport();
 
+  // Check if user is logged in
+  const isLoggedIn = realtimeAuthService.getCurrentUser() !== null;
+
   const moodOptions = [
-    { value: 'Much Better', emoji: '😄', description: 'Feeling amazing!' },
-    { value: 'Better', emoji: '😊', description: 'Good improvement' },
-    { value: 'Same', emoji: '😐', description: 'No change' },
-    { value: 'Worse', emoji: '😔', description: 'Feeling down' },
-    { value: 'Much Worse', emoji: '😫', description: 'Really tired' }
+    { value: 'Much Better', emoji: '😄', description: 'Feeling amazing!', color: 'green' },
+    { value: 'Better', emoji: '😊', description: 'Good improvement', color: 'blue' },
+    { value: 'Same', emoji: '😐', description: 'No change', color: 'yellow' },
+    { value: 'Worse', emoji: '😔', description: 'Feeling down', color: 'orange' }
   ];
 
   const handleSubmit = async (e) => {
@@ -47,7 +49,7 @@ const PostRunReflection = ({
       const success = await realtimeAuthService.saveWorkout(workoutData);
       
       if (success) {
-        onComplete();
+        onComplete('dashboard');
       } else {
         setError('Failed to save workout. Please try again.');
       }
@@ -56,6 +58,33 @@ const PostRunReflection = ({
       setError('An error occurred while saving your workout.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    // Go back to workout type selection
+    onBackToWorkoutType();
+  };
+
+  const getMoodButtonClasses = (mood, isSelected) => {
+    const baseClasses = 'w-full p-4 rounded-xl border-2 transition-all duration-200 transform';
+    
+    if (isSelected) {
+      const colorClasses = {
+        'green': 'border-green-500 bg-green-100 scale-105 shadow-lg',
+        'blue': 'border-blue-500 bg-blue-100 scale-105 shadow-lg',
+        'yellow': 'border-yellow-500 bg-yellow-100 scale-105 shadow-lg',
+        'orange': 'border-orange-500 bg-orange-100 scale-105 shadow-lg'
+      };
+      return `${baseClasses} ${colorClasses[mood.color]}`;
+    } else {
+      const defaultClasses = {
+        'green': 'border-green-300 bg-green-50 hover:border-green-400 hover:bg-green-100',
+        'blue': 'border-blue-300 bg-blue-50 hover:border-blue-400 hover:bg-blue-100',
+        'yellow': 'border-yellow-300 bg-yellow-50 hover:border-yellow-400 hover:bg-yellow-100',
+        'orange': 'border-orange-300 bg-orange-50 hover:border-orange-400 hover:bg-orange-100'
+      };
+      return `${baseClasses} ${defaultClasses[mood.color]}`;
     }
   };
 
@@ -113,11 +142,7 @@ const PostRunReflection = ({
             key={option.value}
             type="button"
             onClick={() => setPostRunMood(option.value)}
-            className={`w-full p-4 rounded-xl border-2 transition-all duration-200 transform ${
-              postRunMood === option.value
-                ? 'border-green-400 bg-green-50 scale-105'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
+            className={getMoodButtonClasses(option, postRunMood === option.value)}
             style={{ 
               WebkitTapHighlightColor: 'transparent',
               WebkitTouchCallout: 'none',
@@ -144,12 +169,6 @@ const PostRunReflection = ({
         ))}
       </div>
 
-      <div className="text-center pt-4">
-        <p className="text-sm text-gray-500">
-          Your run has been logged! Keep up the great work! 💪
-        </p>
-      </div>
-
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Notes */}
         <div>
@@ -172,31 +191,32 @@ const PostRunReflection = ({
           </div>
         )}
 
+        {/* Sign up message for non-logged in users */}
+        {!isLoggedIn && (
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
+            <p className="text-sm text-blue-700">
+              💡 Sign up to save your workout history and track your progress!
+            </p>
+          </div>
+        )}
+
         {/* Action Buttons */}
         <div className="flex space-x-3">
           <button
             type="button"
-            onClick={onBackToMood}
+            onClick={handleCancel}
             className="flex-1 bg-gray-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-gray-600 transition-all duration-200"
           >
-            Back to Mood
+            Cancel
           </button>
           <button
-            type="button"
-            onClick={onBackToWorkoutType}
-            className="flex-1 bg-gray-400 text-white font-semibold py-3 px-6 rounded-xl hover:bg-gray-500 transition-all duration-200"
+            type="submit"
+            disabled={loading || !postRunMood || !isLoggedIn}
+            className="flex-1 bg-gradient-to-r from-green-500 to-blue-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-green-600 hover:to-blue-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            New Workout
+            {loading ? 'Saving...' : 'Save Workout'}
           </button>
         </div>
-
-        <button
-          type="submit"
-          disabled={loading || !postRunMood}
-          className="w-full bg-gradient-to-r from-green-500 to-blue-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-green-600 hover:to-blue-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? 'Saving...' : 'Save Workout'}
-        </button>
       </form>
     </div>
   )

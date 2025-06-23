@@ -82,14 +82,19 @@ function App() {
     setCurrentView('reflection')
   }
 
-  const handleReflectionComplete = async () => {
-    // Reset to workout selector
-    setTimeout(() => {
-      setCurrentView('workout-selector')
-      setSelectedWorkoutType(null)
-      setSelectedMood(null)
-      setWorkoutRecommendation('')
-    }, 100)
+  const handleReflectionComplete = async (destination = 'workout-selector') => {
+    // Navigate based on destination parameter
+    if (destination === 'dashboard') {
+      setCurrentView('dashboard')
+    } else {
+      // Reset to workout selector (default behavior)
+      setTimeout(() => {
+        setCurrentView('workout-selector')
+        setSelectedWorkoutType(null)
+        setSelectedMood(null)
+        setWorkoutRecommendation('')
+      }, 100)
+    }
   }
 
   const handleStopWorkout = () => {
