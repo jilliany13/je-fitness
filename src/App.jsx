@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { realtimeAuthService } from './services/realtimeAuthService'
+import { useHoverSupport } from './components/useHoverSupport'
 import WorkoutTypeSelector from './components/WorkoutTypeSelector'
 import MoodSelector from './components/MoodSelector'
 import RunTimer from './components/RunTimer'
@@ -17,6 +18,7 @@ function App() {
   const [workoutRecommendation, setWorkoutRecommendation] = useState('')
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const supportsHover = useHoverSupport()
   // const [streak, setStreak] = useState(0)
 
   // Listen for authentication state changes
@@ -44,17 +46,24 @@ function App() {
   //   }
   // }, [])
 
-  // Listen for trigger-signup and trigger-login events to switch views from PostRunReflection
+  // Listen for custom events from PostRunReflection
   useEffect(() => {
-    const handleSignup = () => setCurrentView('signup');
-    const handleLogin = () => setCurrentView('login');
-    window.addEventListener('trigger-signup', handleSignup);
-    window.addEventListener('trigger-login', handleLogin);
+    const handleTriggerSignup = () => {
+      setCurrentView('signup')
+    }
+
+    const handleTriggerLogin = () => {
+      setCurrentView('login')
+    }
+
+    window.addEventListener('trigger-signup', handleTriggerSignup)
+    window.addEventListener('trigger-login', handleTriggerLogin)
+
     return () => {
-      window.removeEventListener('trigger-signup', handleSignup);
-      window.removeEventListener('trigger-login', handleLogin);
-    };
-  }, []);
+      window.removeEventListener('trigger-signup', handleTriggerSignup)
+      window.removeEventListener('trigger-login', handleTriggerLogin)
+    }
+  }, [])
 
   // After login/signup, if pendingWorkout exists, go to reflection page and restore state
   useEffect(() => {
@@ -188,6 +197,10 @@ function App() {
     setCurrentView('login')
   }
 
+  const handleShowSignup = () => {
+    setCurrentView('signup')
+  }
+
   const handleShowDashboard = () => {
     setCurrentView('dashboard')
   }
@@ -270,11 +283,14 @@ function App() {
 
               {/* Info for guest users */}
               {!user && (
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
+                <button
+                  onClick={handleShowSignup}
+                  className="w-full bg-blue-50 border border-blue-200 rounded-xl p-4 text-center hover:bg-blue-100 transition-all duration-200 cursor-pointer"
+                >
                   <p className="text-sm text-blue-700">
                     💡 Sign up to save your workout history and track your progress!
                   </p>
-                </div>
+                </button>
               )}
             </div>
           )}

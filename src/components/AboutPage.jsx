@@ -14,7 +14,6 @@ const AboutPage = ({ onReturnHome }) => {
           }`}
           title="Go to Home Page"
         >
-          <span className="text-base">🏠</span>
           <span>Home</span>
         </button>
       </div>

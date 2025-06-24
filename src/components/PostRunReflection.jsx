@@ -250,11 +250,14 @@ const PostRunReflection = ({
 
         {/* Sign up message for non-logged in users */}
         {!isLoggedIn && (
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('trigger-signup'))}
+            className="w-full bg-blue-50 border border-blue-200 rounded-xl p-4 text-center hover:bg-blue-100 transition-all duration-200 cursor-pointer"
+          >
             <p className="text-sm text-blue-700">
               💡 Sign up to save your workout history and track your progress!
             </p>
-          </div>
+          </button>
         )}
 
         {/* Action Buttons */}
