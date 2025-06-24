@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { realtimeAuthService } from '../services/realtimeAuthService';
+import FluencyDashboard from './FluencyDashboard';
 
 const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
   const [userData, setUserData] = useState(null);
@@ -7,6 +8,7 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
   const [error, setError] = useState(null);
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [showWorkoutModal, setShowWorkoutModal] = useState(false);
+  const [showFluency, setShowFluency] = useState(false);
 
   const fetchUserData = async () => {
     try {
@@ -26,6 +28,20 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
   useEffect(() => {
     fetchUserData();
   }, []);
+
+  // Disable body scroll when modal is open
+  useEffect(() => {
+    if (showFluency) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup function to restore scroll when component unmounts
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [showFluency]);
 
   // Refresh data when component becomes visible
   useEffect(() => {
@@ -163,10 +179,16 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 ${showFluency ? 'pointer-events-none select-none' : ''}`}>
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-800">Your Dashboard 📊</h2>
         <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setShowFluency(true)}
+            className="bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:from-green-500 hover:to-blue-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 text-sm"
+          >
+            Skills
+          </button>
           <button
             onClick={onLogout}
             className="bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 text-sm"
@@ -359,6 +381,23 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Fluency Dashboard Modal */}
+      {showFluency && (
+        <>
+          {/* Overlay that blocks all background interaction */}
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setShowFluency(false)}></div>
+          
+          {/* Modal content */}
+          <div className="fixed inset-0 flex items-center justify-center p-4 z-50 pointer-events-none">
+            <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[95vh] overflow-y-auto shadow-2xl pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="p-6">
+                <FluencyDashboard userData={userData} onBack={() => setShowFluency(false)} />
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
