@@ -253,20 +253,12 @@ function App() {
                 </div>
                 <div className="flex items-center space-x-2">
                   {user ? (
-                    <>
-                      <button
-                        onClick={handleShowDashboard}
-                        className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 text-sm"
-                      >
-                        Dashboard
-                      </button>
-                      <button
-                        onClick={handleLogout}
-                        className="bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 text-sm"
-                      >
-                        Sign Out
-                      </button>
-                    </>
+                    <button
+                      onClick={handleShowDashboard}
+                      className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 text-sm"
+                    >
+                      Dashboard
+                    </button>
                   ) : (
                     <button
                       onClick={handleShowLogin}
@@ -290,6 +282,16 @@ function App() {
                   <p className="text-sm text-blue-700">
                     💡 Sign up to save your workout history and track your progress!
                   </p>
+                </button>
+              )}
+
+              {/* Sign Out button at the bottom for logged in users */}
+              {user && (
+                <button
+                  onClick={handleLogout}
+                  className="w-full bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-xl border-2 border-gray-500 hover:bg-gray-300 hover:border-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
+                >
+                  Sign Out
                 </button>
               )}
             </div>
