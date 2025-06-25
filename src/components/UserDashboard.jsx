@@ -182,7 +182,7 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
     <div className={`space-y-6 ${showFluency ? 'pointer-events-none select-none' : ''}`}>
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-800">Your Dashboard 📊</h2>
+          <h2 className="text-2xl font-bold text-gray-800">Your Dashboard</h2>
           <button
             onClick={() => setShowFluency(true)}
             className="flex-1 ml-8 bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:from-green-500 hover:to-blue-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 text-base"

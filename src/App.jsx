@@ -289,7 +289,7 @@ function App() {
               {user && (
                 <button
                   onClick={handleLogout}
-                  className="w-full bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-xl border-2 border-gray-500 hover:bg-gray-300 hover:border-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
+                  className="w-full bg-gray-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
                 >
                   Sign Out
                 </button>
