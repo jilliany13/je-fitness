@@ -180,22 +180,24 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
 
   return (
     <div className={`space-y-6 ${showFluency ? 'pointer-events-none select-none' : ''}`}>
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-800">Your Dashboard 📊</h2>
-        <div className="flex items-center space-x-2">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-gray-800">Your Dashboard 📊</h2>
           <button
             onClick={() => setShowFluency(true)}
-            className="bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:from-green-500 hover:to-blue-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 text-sm"
+            className="flex-1 ml-8 bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:from-green-500 hover:to-blue-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 text-base"
           >
             Skills
           </button>
-          <button
-            onClick={onLogout}
-            className="bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 text-sm"
-          >
-            Sign Out
-          </button>
         </div>
+        
+        {/* Start New Workout Button */}
+        <button
+          onClick={onReturnToWorkout}
+          className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200"
+        >
+          Start New Workout
+        </button>
       </div>
 
       {/* Overview Stats */}
@@ -300,13 +302,13 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex space-x-3">
+      {/* Dashboard Action Buttons */}
+      <div className="flex">
         <button
-          onClick={onReturnToWorkout}
-          className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200"
+          onClick={onLogout}
+          className="w-full bg-gray-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
         >
-          Start New Workout
+          Sign Out
         </button>
       </div>
 
