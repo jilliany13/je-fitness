@@ -6,15 +6,15 @@ import { getDatabase, ref, set, get, push, update } from 'firebase/database';
 // Go to Firebase Console -> Project Settings -> Your Apps -> Web App
 // Copy the firebaseConfig object and replace the values below
 const firebaseConfig = {
-    apiKey: "AIzaSyDB7xAK26XTkh1-c6p3rpyuqKBZsw3SJiw",
-    authDomain: "je-fitness.firebaseapp.com",
-    projectId: "je-fitness",
-    storageBucket: "je-fitness.appspot.com",
-    messagingSenderId: "380827946135",
-    appId: "1:380827946135:web:3b424d9c228c5fcef4edd2",
-    measurementId: "G-T94CQZFJJH",
-    databaseURL: "https://je-fitness-default-rtdb.firebaseio.com"
-  };
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL
+};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

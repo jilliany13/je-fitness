@@ -68,7 +68,7 @@ const AboutPage = ({ onReturnHome }) => {
           <h3 className="font-semibold text-gray-800 mb-2">😊 Mood-Based Approach</h3>
           <p>
             We understand that your energy levels and mood change daily. Our app adapts 
-            to how you're feeling, ensuring every workout is perfectly suited to your current state.
+            to how you're feeling, ensuring every workout is perfectly suited to your current state!
           </p>
         </div>
 
