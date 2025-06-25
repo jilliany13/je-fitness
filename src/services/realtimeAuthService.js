@@ -9,25 +9,105 @@ import {
   set, 
   get, 
   push, 
-  update 
+  update,
+  query,
+  orderByChild,
+  equalTo
 } from 'firebase/database';
 import { auth, database } from '../firebase';
 
 export const realtimeAuthService = {
-  // Register a new user
-  async signUp(email, password) {
+  // Validate username format
+  validateUsername(username) {
+    if (!username || username.length < 6) {
+      throw new Error('Username must be at least 6 characters long.');
+    }
+    if (/\s/.test(username)) {
+      throw new Error('Username cannot contain any whitespace characters.');
+    }
+    return true;
+  },
+
+  // Check if username is unique
+  async isUsernameUnique(username) {
     try {
-      console.log('Starting signup process for:', email);
+      console.log('Checking if username is unique:', username);
+      const usernameQuery = query(
+        ref(database, 'usernames'),
+        orderByChild('username'),
+        equalTo(username)
+      );
+      console.log('Executing username query...');
+      const snapshot = await get(usernameQuery);
+      console.log('Username query result:', snapshot.exists());
+      console.log('Username query data:', snapshot.val());
+      return !snapshot.exists();
+    } catch (error) {
+      console.error('Error checking username uniqueness:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      console.error('Full error object:', JSON.stringify(error, null, 2));
+      
+      // Log the error type and constructor
+      console.error('Error constructor:', error.constructor.name);
+      console.error('Error prototype:', Object.getPrototypeOf(error));
+      
+      // If it's a permission error, we'll assume the username is available
+      // and let the signup proceed. The Firebase Auth will handle duplicates.
+      if (error.code === 'PERMISSION_DENIED' || 
+          error.message.includes('permission') ||
+          error.message.includes('Permission') ||
+          error.code === 'permission-denied') {
+        console.log('Permission denied for username check, proceeding with signup...');
+        return true; // Assume username is available
+      }
+      
+      // For any other error, also assume username is available to allow signup to proceed
+      console.log('Unknown error during username check, proceeding with signup...');
+      return true;
+    }
+  },
+
+  // Register a new user
+  async signUp(username, password) {
+    try {
+      console.log('Starting signup process for username:', username);
+      
+      // Validate username
+      console.log('Validating username...');
+      this.validateUsername(username);
+      console.log('Username validation passed');
+      
+      // Check if username is unique (with fallback for permission issues)
+      console.log('Checking username uniqueness...');
+      try {
+        const isUnique = await this.isUsernameUnique(username);
+        console.log('Username uniqueness check result:', isUnique);
+        
+        if (!isUnique) {
+          throw new Error('Username is already taken. Please choose a different one.');
+        }
+      } catch (uniquenessError) {
+        console.warn('Username uniqueness check failed:', uniquenessError);
+        console.log('Proceeding with signup - Firebase Auth will handle duplicates if needed.');
+        // Continue with signup even if uniqueness check fails
+      }
+
+      // Create a unique email for Firebase Auth (since Firebase requires email)
+      const uniqueEmail = `${username}@jefitness.local`;
+      console.log('Generated unique email:', uniqueEmail);
       
       // Create user account in Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log('Creating user account in Firebase Auth...');
+      const userCredential = await createUserWithEmailAndPassword(auth, uniqueEmail, password);
       const user = userCredential.user;
       
       console.log('User created in Auth with UID:', user.uid);
 
       // Create user document in Realtime Database
       const userData = {
-        email: user.email,
+        username: username,
+        email: uniqueEmail, // Store the generated email for reference
         createdAt: new Date().toISOString(),
         totalWorkouts: 0,
         workoutHistory: {},
@@ -37,25 +117,68 @@ export const realtimeAuthService = {
 
       console.log('Creating user document in database:', userData);
       
+      // Create user document
       await set(ref(database, `users/${user.uid}`), userData);
-      
       console.log('User document created successfully');
+      
+      // Create username mapping for uniqueness checking
+      console.log('Creating username mapping...');
+      try {
+        await set(ref(database, `usernames/${user.uid}`), {
+          username: username,
+          uid: user.uid
+        });
+        console.log('Username mapping created successfully');
+      } catch (mappingError) {
+        console.warn('Failed to create username mapping:', mappingError);
+        console.warn('User account created but username mapping failed. This is not critical.');
+        // Don't throw error here - the user account is still created successfully
+      }
+      
+      console.log('User document and username mapping created successfully');
 
       return { user };
     } catch (error) {
-      console.error('Signup error:', error);
+      console.error('Signup error in realtimeAuthService:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
       throw error;
     }
   },
 
   // Sign in existing user
-  async signIn(email, password) {
+  async signIn(username, password) {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      // Try to find user by username mapping first
+      let userEmail = `${username}@jefitness.local`;
+      
+      try {
+        const usernameQuery = query(
+          ref(database, 'usernames'),
+          orderByChild('username'),
+          equalTo(username)
+        );
+        const snapshot = await get(usernameQuery);
+        
+        if (snapshot.exists()) {
+          // Username mapping exists, use it
+          const usernameData = Object.values(snapshot.val())[0];
+          userEmail = `${username}@jefitness.local`;
+        } else {
+          // Username mapping doesn't exist, try direct signin with generated email
+          console.log('Username mapping not found, trying direct signin...');
+        }
+      } catch (mappingError) {
+        console.warn('Error checking username mapping:', mappingError);
+        console.log('Falling back to direct signin with generated email...');
+        // Continue with generated email
+      }
+      
+      const userCredential = await signInWithEmailAndPassword(auth, userEmail, password);
       const user = userCredential.user;
       
       // Ensure user document exists in database
-      await this.ensureUserDocument(user.uid, user.email);
+      await this.ensureUserDocument(user.uid, username);
       
       return { user };
     } catch (error) {
@@ -78,15 +201,15 @@ export const realtimeAuthService = {
   },
 
   // Create or ensure user document exists
-  async ensureUserDocument(userId, email) {
+  async ensureUserDocument(userId, username) {
     try {
       const userRef = ref(database, `users/${userId}`);
       const userSnapshot = await get(userRef);
       
       if (!userSnapshot.exists()) {
-        console.log('User document not found, creating it now for:', email);
+        console.log('User document not found, creating it now for:', username);
         const userData = {
-          email: email,
+          username: username,
           createdAt: new Date().toISOString(),
           totalWorkouts: 0,
           workoutHistory: {},
@@ -114,11 +237,15 @@ export const realtimeAuthService = {
         throw new Error('No user logged in');
       }
 
-      console.log('Saving workout for user:', currentUser.email);
-
-      // Ensure user document exists
-      const userData = await this.ensureUserDocument(currentUser.uid, currentUser.email);
+      // Get user document to access username
+      const userSnapshot = await get(ref(database, `users/${currentUser.uid}`));
+      if (!userSnapshot.exists()) {
+        throw new Error('User document not found');
+      }
       
+      const userData = userSnapshot.val();
+      console.log('Saving workout for user:', userData.username);
+
       const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
       
       // Create workout entry with unique key
@@ -219,9 +346,12 @@ export const realtimeAuthService = {
         throw new Error('No user logged in');
       }
 
-      console.log('Manually creating user document for:', currentUser.email);
+      // Extract username from the generated email
+      const username = currentUser.email.replace('@jefitness.local', '');
+      console.log('Manually creating user document for username:', username);
       
       const userData = {
+        username: username,
         email: currentUser.email,
         createdAt: new Date().toISOString(),
         totalWorkouts: 0,

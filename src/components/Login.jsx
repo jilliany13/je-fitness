@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { realtimeAuthService } from '../services/realtimeAuthService';
 
 const Login = ({ onSwitchToSignup, onLoginSuccess, onBackToWorkout }) => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -13,25 +13,29 @@ const Login = ({ onSwitchToSignup, onLoginSuccess, onBackToWorkout }) => {
     setLoading(true);
 
     try {
-      await realtimeAuthService.signIn(email, password);
+      await realtimeAuthService.signIn(username, password);
       onLoginSuccess();
     } catch (error) {
       console.error('Login error:', error);
       switch (error.code) {
         case 'auth/user-not-found':
-          setError('No account found with this email. Please sign up first.');
+          setError('No account found with this username. Please sign up first.');
           break;
         case 'auth/wrong-password':
           setError('Incorrect password. Please try again.');
           break;
         case 'auth/invalid-email':
-          setError('Please enter a valid email address.');
+          setError('Please enter a valid username.');
           break;
         case 'auth/too-many-requests':
           setError('Too many failed attempts. Please try again later.');
           break;
         default:
-          setError('Failed to log in. Please try again.');
+          if (error.message.includes('No account found with this username')) {
+            setError('No account found with this username. Please sign up first.');
+          } else {
+            setError('Failed to log in. Please try again.');
+          }
       }
     } finally {
       setLoading(false);
@@ -47,16 +51,16 @@ const Login = ({ onSwitchToSignup, onLoginSuccess, onBackToWorkout }) => {
 
       <form onSubmit={handleLogin} className="space-y-4">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-            Email
+          <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+            Username
           </label>
           <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-            placeholder="Enter your email"
+            placeholder="Enter your username"
             required
           />
         </div>

@@ -9,7 +9,7 @@ import AboutPage from './components/AboutPage'
 import Login from './components/Login'
 import Signup from './components/Signup'
 import UserDashboard from './components/UserDashboard'
-// import StreakTracker from './components/StreakTracker'
+import StreakTracker from './components/StreakTracker'
 
 function App() {
   const [currentView, setCurrentView] = useState('workout-selector') // workout-selector, login, signup, dashboard, mood-selector, timer, reflection, about
@@ -17,14 +17,28 @@ function App() {
   const [selectedMood, setSelectedMood] = useState(null)
   const [workoutRecommendation, setWorkoutRecommendation] = useState('')
   const [user, setUser] = useState(null)
+  const [username, setUsername] = useState('')
   const [loading, setLoading] = useState(true)
+  const [pendingWorkout, setPendingWorkout] = useState(null)
   const supportsHover = useHoverSupport()
   // const [streak, setStreak] = useState(0)
 
   // Listen for authentication state changes
   useEffect(() => {
-    const unsubscribe = realtimeAuthService.onAuthStateChanged((user) => {
+    const unsubscribe = realtimeAuthService.onAuthStateChanged(async (user) => {
       setUser(user)
+      if (user) {
+        try {
+          const userStats = await realtimeAuthService.getUserStats()
+          if (userStats && userStats.username) {
+            setUsername(userStats.username)
+          }
+        } catch (error) {
+          console.error('Error fetching user stats:', error)
+        }
+      } else {
+        setUsername('')
+      }
       setLoading(false)
       
       // Don't change view automatically - let user stay where they are
@@ -249,7 +263,7 @@ function App() {
               {/* Auth buttons at the top */}
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-600">
-                  {user ? `Welcome, ${user.email}!` : 'Guest mode'}
+                  {user ? `Welcome, ${username}!` : 'Guest mode'}
                 </div>
                 <div className="flex items-center space-x-2">
                   {user ? (

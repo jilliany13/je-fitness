@@ -3,7 +3,7 @@ import { realtimeAuthService } from '../services/realtimeAuthService';
 import { captchaService } from '../services/captchaService';
 
 const Signup = ({ onSwitchToLogin, onSignupSuccess, onBackToWorkout }) => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -14,6 +14,18 @@ const Signup = ({ onSwitchToLogin, onSignupSuccess, onBackToWorkout }) => {
   const handleSignup = async (e) => {
     e.preventDefault();
     setError('');
+
+    // Validate username length
+    if (username.length < 6) {
+      setError('Username must be at least 6 characters long.');
+      return;
+    }
+
+    // Validate username contains no whitespace
+    if (/\s/.test(username)) {
+      setError('Username cannot contain any whitespace characters.');
+      return;
+    }
 
     // Validate passwords match
     if (password !== confirmPassword) {
@@ -38,23 +50,37 @@ const Signup = ({ onSwitchToLogin, onSignupSuccess, onBackToWorkout }) => {
     setLoading(true);
 
     try {
-      await realtimeAuthService.signUp(email, password);
+      await realtimeAuthService.signUp(username, password);
       onSignupSuccess();
     } catch (error) {
       console.error('Signup error:', error);
-      switch (error.code) {
-        case 'auth/email-already-in-use':
-          setError('An account with this email already exists. Please sign in instead.');
-          break;
-        case 'auth/invalid-email':
-          setError('Please enter a valid email address.');
-          break;
-        case 'auth/weak-password':
-          setError('Password is too weak. Please choose a stronger password.');
-          break;
-        default:
-          setError('Failed to create account. Please try again.');
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      
+      // Handle specific error cases
+      if (error.code === 'auth/email-already-in-use') {
+        setError('An account with this username already exists. Please sign in instead.');
+      } else if (error.code === 'auth/invalid-email') {
+        setError('Please enter a valid username.');
+      } else if (error.code === 'auth/weak-password') {
+        setError('Password is too weak. Please choose a stronger password.');
+      } else if (error.code === 'auth/network-request-failed') {
+        setError('Network error. Please check your internet connection and try again.');
+      } else if (error.code === 'auth/operation-not-allowed') {
+        setError('Email/password accounts are not enabled. Please contact support.');
+      } else if (error.message && error.message.includes('Username is already taken')) {
+        setError('Username is already taken. Please choose a different one.');
+      } else if (error.message && error.message.includes('Username must be at least 6 characters')) {
+        setError('Username must be at least 6 characters long.');
+      } else if (error.message && error.message.includes('Username cannot contain any whitespace')) {
+        setError('Username cannot contain any whitespace characters.');
+      } else if (error.message && error.message.includes('Failed to check username availability')) {
+        setError('Unable to check username availability. Please try again.');
+      } else {
+        // Show the actual error message for debugging
+        setError(`Signup failed: ${error.message || 'Unknown error occurred'}`);
       }
+      
       // Generate new captcha on error
       setCaptcha(captchaService.generateSimpleCaptcha());
       setCaptchaAnswer('');
@@ -72,16 +98,16 @@ const Signup = ({ onSwitchToLogin, onSignupSuccess, onBackToWorkout }) => {
 
       <form onSubmit={handleSignup} className="space-y-4">
         <div>
-          <label htmlFor="signup-email" className="block text-sm font-medium text-gray-700 mb-1">
-            Email
+          <label htmlFor="signup-username" className="block text-sm font-medium text-gray-700 mb-1">
+            Username
           </label>
           <input
-            type="email"
-            id="signup-email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            id="signup-username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-            placeholder="Enter your email"
+            placeholder="Choose a username (min 6 characters, no spaces)"
             required
           />
         </div>
