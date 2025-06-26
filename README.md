@@ -42,6 +42,12 @@ J&E Fitness is a personalized workout companion that adapts to your daily energy
 - **Personalized recommendations** based on your mood and chosen activity
 - **Mobile-optimized** design for on-the-go use
 
+### ✏️ **Custom Workouts**
+- **Create Your Own:** If none of the preset workout types fit your needs, select "Custom" to create your own workout.
+- **Custom Steps:** Enter your own workout steps or routine. These will be saved with your workout entry.
+- **View Details:** Custom workouts appear in your workout history. Click on a custom workout to view the steps you entered.
+- **Delete Option:** You can delete custom workouts from your history if needed.
+
 ## 🚀 How It Works
 
 1. **Choose Your Workout** - Select from 15 different workout types
