@@ -2,9 +2,9 @@
 
 A mood-based workout recommendation app that helps you choose the perfect workout based on how you're feeling today.
 
-## 🌐 Live Demo
+## Visit the app
 
-**Visit the app:** [https://je-fitness.vercel.app](https://je-fitness.vercel.app)
+[https://je-fitness.vercel.app](https://je-fitness.vercel.app)
 
 ## 🎯 About
 
@@ -73,10 +73,6 @@ J&E Fitness is a personalized workout companion that adapts to your daily energy
 - **Beautiful interface** - enjoyable user experience
 - **Accessible design** - works for everyone
 
-## 🔗 Links
-
-- **Live App:** [https://je-fitness.vercel.app](https://je-fitness.vercel.app)
-- **GitHub Repository:** [https://github.com/jilliany13/mood-run](https://github.com/jilliany13/mood-run)
 
 ## 💡 Future Enhancements
 
