@@ -52,10 +52,11 @@ J&E Fitness is a personalized workout companion that adapts to your daily energy
 
 ## 🛠️ Technology Stack
 
-- **Frontend:** React 18 with Vite
+- **Frontend:** React with Vite
 - **Styling:** Tailwind CSS
 - **Animations:** CSS animations and React state management
 - **Deployment:** Vercel
+- **Authentication:** Firebase
 - **Responsive Design:** Mobile-first approach
 
 ## 📱 Mobile Experience
@@ -86,9 +87,6 @@ J&E Fitness is a personalized workout companion that adapts to your daily energy
 
 This is a personal project, but feedback and suggestions are welcome!
 
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
