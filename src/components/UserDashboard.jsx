@@ -5,10 +5,12 @@ import FluencyDashboard from './FluencyDashboard';
 const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedWorkout, setSelectedWorkout] = useState(null);
-  const [showWorkoutModal, setShowWorkoutModal] = useState(false);
+  const [error, setError] = useState('');
   const [showFluency, setShowFluency] = useState(false);
+  const [showWorkoutModal, setShowWorkoutModal] = useState(false);
+  const [selectedWorkout, setSelectedWorkout] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [workoutToDelete, setWorkoutToDelete] = useState(null);
 
   const fetchUserData = async () => {
     try {
@@ -101,6 +103,7 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
   };
 
   const handleWorkoutClick = (workout) => {
+    console.log('Workout data:', workout); // Debug log
     setSelectedWorkout(workout);
     setShowWorkoutModal(true);
   };
@@ -110,32 +113,94 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
     setSelectedWorkout(null);
   };
 
+  const handleDeleteWorkout = (workout) => {
+    setWorkoutToDelete(workout);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteWorkout = async () => {
+    if (!workoutToDelete) return;
+    
+    try {
+      // Remove the workout from the user's workout history
+      // Since workoutHistory is stored as an object in Firebase, we need to find the key
+      const updatedWorkoutHistory = {};
+      let foundWorkout = false;
+      
+      if (userData.workoutHistory && typeof userData.workoutHistory === 'object') {
+        Object.keys(userData.workoutHistory).forEach(key => {
+          const workout = userData.workoutHistory[key];
+          if (workout.timestamp !== workoutToDelete.timestamp) {
+            updatedWorkoutHistory[key] = workout;
+          } else {
+            foundWorkout = true;
+          }
+        });
+      }
+      
+      if (!foundWorkout) {
+        throw new Error('Workout not found in history');
+      }
+      
+      // Update the user data
+      const updatedUserData = {
+        ...userData,
+        workoutHistory: updatedWorkoutHistory,
+        totalWorkouts: Math.max(0, userData.totalWorkouts - 1)
+      };
+      
+      // Save to Firebase
+      await realtimeAuthService.updateUserData(updatedUserData);
+      
+      // Update local state
+      setUserData(updatedUserData);
+      setShowDeleteModal(false);
+      setWorkoutToDelete(null);
+      setShowWorkoutModal(false);
+      setSelectedWorkout(null);
+    } catch (error) {
+      console.error('Error deleting workout:', error);
+      alert('Failed to delete workout. Please try again.');
+    }
+  };
+
+  const cancelDeleteWorkout = () => {
+    setShowDeleteModal(false);
+    setWorkoutToDelete(null);
+  };
+
   const calculateStats = () => {
+    // Normalize workoutHistory to always be an array
+    let workoutArray = [];
+    if (userData?.workoutHistory) {
+      if (Array.isArray(userData.workoutHistory)) {
+        workoutArray = userData.workoutHistory;
+      } else if (typeof userData.workoutHistory === 'object') {
+        workoutArray = Object.values(userData.workoutHistory);
+      }
+    }
+
     // Initialize default stats for new users
     const stats = {
       totalWorkouts: userData?.totalWorkouts || 0,
       workoutTypes: {},
       moods: {},
-      recentWorkouts: [],
+      allWorkouts: [],
       weeklyWorkouts: 0,
       monthlyWorkouts: 0
     };
 
-    // If there's workout history, calculate from it
-    if (userData?.workoutHistory && Array.isArray(userData.workoutHistory) && userData.workoutHistory.length > 0) {
-      stats.recentWorkouts = userData.workoutHistory.slice(-5).reverse();
-      
+    if (workoutArray.length > 0) {
+      stats.allWorkouts = workoutArray.slice().reverse(); // Show all workouts, newest first
       const now = new Date();
       const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
       const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-      userData.workoutHistory.forEach(workout => {
+      workoutArray.forEach(workout => {
         // Count workout types
         stats.workoutTypes[workout.workoutType] = (stats.workoutTypes[workout.workoutType] || 0) + 1;
-        
         // Count moods
         stats.moods[workout.preRunMood] = (stats.moods[workout.preRunMood] || 0) + 1;
-        
         // Count recent workouts
         const workoutDate = new Date(workout.date);
         if (workoutDate >= oneWeekAgo) {
@@ -223,7 +288,7 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
       {/* Workout Types */}
       <div className="bg-white border border-gray-200 rounded-xl p-4">
         <h3 className="text-lg font-semibold text-gray-800 mb-3">Workout Types</h3>
-        <div className="space-y-2">
+        <div className="max-h-36 overflow-y-auto space-y-2 px-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
           {Object.keys(stats.workoutTypes).length > 0 ? (
             Object.entries(stats.workoutTypes).map(([type, count]) => (
               <div key={type} className="flex items-center justify-between">
@@ -268,12 +333,12 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
         </div>
       </div>
 
-      {/* Recent Workouts */}
+      {/* All Workouts */}
       <div className="bg-white border border-gray-200 rounded-xl p-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">Recent Workouts</h3>
-        <div className="space-y-3">
-          {stats.recentWorkouts.length > 0 ? (
-            stats.recentWorkouts.map((workout, index) => (
+        <h3 className="text-lg font-semibold text-gray-800 mb-3">All Workouts</h3>
+        <div className="max-h-96 overflow-y-auto space-y-3 px-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+          {stats.allWorkouts.length > 0 ? (
+            stats.allWorkouts.map((workout, index) => (
               <button
                 key={index}
                 onClick={() => handleWorkoutClick(workout)}
@@ -345,6 +410,34 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
                   </div>
                 </div>
 
+                {/* Workout Recommendation - Only show for standard workouts */}
+                {selectedWorkout.workoutRecommendation && 
+                 selectedWorkout.workoutRecommendation !== 'Custom workout based on your mood' && (
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    <h5 className="font-semibold text-gray-800 mb-2">Workout Recommendation</h5>
+                    <p className="text-gray-700 text-sm">{selectedWorkout.workoutRecommendation}</p>
+                  </div>
+                )}
+
+                {/* Custom Workout Steps - Show for custom workouts or when user created custom steps */}
+                {selectedWorkout.customWorkoutSteps && (
+                  <div className="bg-yellow-50 rounded-lg p-4">
+                    <h5 className="font-semibold text-gray-800 mb-2">Custom Workout</h5>
+                    <p className="text-gray-700 text-sm">{selectedWorkout.customWorkoutSteps}</p>
+                  </div>
+                )}
+
+                {/* For custom workout types, show the custom steps as the main workout details */}
+                {(!selectedWorkout.workoutRecommendation || selectedWorkout.workoutRecommendation === 'Custom workout based on your mood') && 
+                 !selectedWorkout.customWorkoutSteps && (
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    <h5 className="font-semibold text-gray-800 mb-2">Workout Details</h5>
+                    <p className="text-gray-700 text-sm">
+                      {selectedWorkout.customWorkoutSteps || 'Custom workout completed'}
+                    </p>
+                  </div>
+                )}
+
                 {/* Post-workout Mood */}
                 {selectedWorkout.postRunMood && (
                   <div className="bg-gray-50 rounded-lg p-4">
@@ -380,6 +473,16 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
               >
                 Close
               </button>
+
+              {/* Delete Button - Only show for custom workouts */}
+              {(selectedWorkout.workoutRecommendation === 'Custom workout based on your mood' || selectedWorkout.customWorkoutSteps) && (
+                <button
+                  onClick={() => handleDeleteWorkout(selectedWorkout)}
+                  className="w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-red-600 transition-all duration-200"
+                >
+                  Delete Workout
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -400,6 +503,46 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
             </div>
           </div>
         </>
+      )}
+
+      {/* Delete Workout Confirmation Modal */}
+      {showDeleteModal && workoutToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 space-y-4">
+              <h3 className="text-xl font-bold text-gray-800">Confirm Deletion</h3>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-gray-700 mb-2">Are you sure you want to delete this workout?</p>
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">{getWorkoutTypeEmoji(workoutToDelete.workoutType)}</span>
+                  <div>
+                    <div className="font-medium text-gray-800">{workoutToDelete.workoutType}</div>
+                    <div className="text-sm text-gray-600">
+                      {getMoodEmoji(workoutToDelete.preRunMood)} {workoutToDelete.preRunMood}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {new Date(workoutToDelete.date).toLocaleDateString()}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end space-x-2">
+                <button
+                  onClick={confirmDeleteWorkout}
+                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                >
+                  Delete
+                </button>
+                <button
+                  onClick={cancelDeleteWorkout}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

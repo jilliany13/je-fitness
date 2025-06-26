@@ -3,6 +3,9 @@ import { useHoverSupport } from './useHoverSupport';
 
 const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop, onStopAndReturnHome }) => {
   const supportsHover = useHoverSupport();
+  const [showCustomInput, setShowCustomInput] = useState(false);
+  const [customWorkoutSteps, setCustomWorkoutSteps] = useState('');
+  const [useCustomWorkout, setUseCustomWorkout] = useState(false);
   
   // Helper function to conditionally apply hover classes
   const getButtonClasses = (baseClasses, hoverClasses) => {
@@ -105,761 +108,135 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
     return messages[workoutType]?.[mood] || 'Keep going! You\'ve got this! 💪'
   }
 
-  // Basketball workout display
-  if (workoutType === 'Basketball') {
-    return (
-      <div className="text-center space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Basketball 🏀
-          </h2>
-          <p className="text-gray-600 mb-3">
-            {getMotivationalMessage(workoutType, mood)}
-          </p>
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-            <p className="text-base text-gray-600">{workoutRecommendation}</p>
-          </div>
-        </div>
+  const getWorkoutEmoji = (type) => {
+    const emojis = {
+      'Gym': '🏋️‍♂️',
+      'Running': '🏃‍♂️',
+      'Basketball': '🏀',
+      'Swimming': '🏊‍♂️',
+      'Tennis': '🎾',
+      'Volleyball': '🏐',
+      'Boxing': '🥊',
+      'Bowling': '🎳',
+      'Yoga': '🧘‍♀️',
+      'Soccer': '⚽',
+      'Table Tennis': '🏓',
+      'Cycling': '🚴‍♂️',
+      'Badminton': '🏸',
+      'Walking': '🚶‍♀️',
+      'CrossFit': '🏋️‍♀️'
+    };
+    return emojis[type] || '💪';
+  };
 
-        <div className="relative">
-          <div className="w-48 h-48 mx-auto flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-8xl animate-bounce mb-2">
-                🏀
-              </div>
-            </div>
-          </div>
-        </div>
+  const handleComplete = () => {
+    const isCustomWorkoutType = !workoutRecommendation || workoutRecommendation === 'Custom workout based on your mood';
+    const finalWorkoutData = {
+      workoutRecommendation: workoutRecommendation,
+      customWorkoutSteps: (isCustomWorkoutType || useCustomWorkout) ? customWorkoutSteps : null
+    };
+    onComplete(finalWorkoutData);
+  };
 
-        <div className="space-y-3">
-          <button
-            onClick={onComplete}
-            className={getButtonClasses(
-              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-green-600"
-            )}
-          >
-            ✅ Workout Completed
-          </button>
-          
-          <button
-            onClick={onStopAndReturnHome}
-            className={getButtonClasses(
-              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-red-600"
-            )}
-          >
-            Stop Workout
-          </button>
-        </div>
-      </div>
-    )
-  }
+  const handleUseCustomWorkout = () => {
+    setUseCustomWorkout(true);
+    setShowCustomInput(true);
+  };
 
-  // Volleyball workout display
-  if (workoutType === 'Volleyball') {
-    return (
-      <div className="text-center space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Volleyball 🏐
-          </h2>
-          <p className="text-gray-600 mb-3">
-            {getMotivationalMessage(workoutType, mood)}
-          </p>
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-            <p className="text-base text-gray-600">{workoutRecommendation}</p>
-          </div>
-        </div>
+  const handleUseRecommendedWorkout = () => {
+    setUseCustomWorkout(false);
+    setShowCustomInput(false);
+  };
 
-        <div className="relative">
-          <div className="w-48 h-48 mx-auto flex items-center justify-center">
-            <div className="text-center relative">
-              {/* Volleyball net */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-1 bg-gray-400 rounded"></div>
-              {/* Volleyball going back and forth */}
-              <div className="text-6xl animate-pulse">
-                🏐
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <button
-            onClick={onComplete}
-            className={getButtonClasses(
-              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-green-600"
-            )}
-          >
-            ✅ Workout Completed
-          </button>
-          
-          <button
-            onClick={onStopAndReturnHome}
-            className={getButtonClasses(
-              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-red-600"
-            )}
-          >
-            Stop Workout
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // Gym workout display
-  if (workoutType === 'Gym') {
-    return (
-      <div className="text-center space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Gym 🏋️‍♂️
-          </h2>
-          <p className="text-gray-600 mb-3">
-            {getMotivationalMessage(workoutType, mood)}
-          </p>
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-            <p className="text-base text-gray-600">{workoutRecommendation}</p>
-          </div>
-        </div>
-
-        <div className="relative">
-          <div className="w-48 h-48 mx-auto flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-8xl animate-pulse mb-2">
-                🏋️‍♂️
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <button
-            onClick={onComplete}
-            className={getButtonClasses(
-              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-green-600"
-            )}
-          >
-            ✅ Workout Completed
-          </button>
-          
-          <button
-            onClick={onStopAndReturnHome}
-            className={getButtonClasses(
-              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-red-600"
-            )}
-          >
-            Stop Workout
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // Bowling workout display
-  if (workoutType === 'Bowling') {
-    return (
-      <div className="text-center space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Bowling 🎳
-          </h2>
-          <p className="text-gray-600 mb-3">
-            {getMotivationalMessage(workoutType, mood)}
-          </p>
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-            <p className="text-base text-gray-600">{workoutRecommendation}</p>
-          </div>
-        </div>
-
-        <div className="relative">
-          <div className="w-48 h-48 mx-auto flex items-center justify-center">
-            <div className="text-center relative">
-              {/* Bowling lane */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-2 bg-amber-600 rounded"></div>
-              {/* Bowling ball rolling */}
-              <div className="text-6xl animate-bowling-roll">
-                🎳
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <button
-            onClick={onComplete}
-            className={getButtonClasses(
-              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-green-600"
-            )}
-          >
-            ✅ Workout Completed
-          </button>
-          
-          <button
-            onClick={onStopAndReturnHome}
-            className={getButtonClasses(
-              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-red-600"
-            )}
-          >
-            Stop Workout
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // Soccer workout display
-  if (workoutType === 'Soccer') {
-    return (
-      <div className="text-center space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Soccer ⚽
-          </h2>
-          <p className="text-gray-600 mb-3">
-            {getMotivationalMessage(workoutType, mood)}
-          </p>
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-            <p className="text-base text-gray-600">{workoutRecommendation}</p>
-          </div>
-        </div>
-
-        <div className="relative">
-          <div className="w-48 h-48 mx-auto flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-8xl animate-bounce mb-2">
-                ⚽
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <button
-            onClick={onComplete}
-            className={getButtonClasses(
-              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-green-600"
-            )}
-          >
-            ✅ Workout Completed
-          </button>
-          
-          <button
-            onClick={onStopAndReturnHome}
-            className={getButtonClasses(
-              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-red-600"
-            )}
-          >
-            Stop Workout
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // Tennis workout display
-  if (workoutType === 'Tennis') {
-    return (
-      <div className="text-center space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Tennis 🎾
-          </h2>
-          <p className="text-gray-600 mb-3">
-            {getMotivationalMessage(workoutType, mood)}
-          </p>
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-            <p className="text-base text-gray-600">{workoutRecommendation}</p>
-          </div>
-        </div>
-
-        <div className="relative">
-          <div className="w-48 h-48 mx-auto flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-8xl animate-bounce mb-2">
-                🎾
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <button
-            onClick={onComplete}
-            className={getButtonClasses(
-              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-green-600"
-            )}
-          >
-            ✅ Workout Completed
-          </button>
-          
-          <button
-            onClick={onStopAndReturnHome}
-            className={getButtonClasses(
-              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-red-600"
-            )}
-          >
-            Stop Workout
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // Table Tennis workout display
-  if (workoutType === 'Table Tennis') {
-    return (
-      <div className="text-center space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Table Tennis 🏓
-          </h2>
-          <p className="text-gray-600 mb-3">
-            {getMotivationalMessage(workoutType, mood)}
-          </p>
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-            <p className="text-base text-gray-600">{workoutRecommendation}</p>
-          </div>
-        </div>
-
-        <div className="relative">
-          <div className="w-48 h-48 mx-auto flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-8xl animate-pulse mb-2">
-                🏓
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <button
-            onClick={onComplete}
-            className={getButtonClasses(
-              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-green-600"
-            )}
-          >
-            ✅ Workout Completed
-          </button>
-          
-          <button
-            onClick={onStopAndReturnHome}
-            className={getButtonClasses(
-              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-red-600"
-            )}
-          >
-            Stop Workout
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // Badminton workout display
-  if (workoutType === 'Badminton') {
-    return (
-      <div className="text-center space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Badminton 🏸
-          </h2>
-          <p className="text-gray-600 mb-3">
-            {getMotivationalMessage(workoutType, mood)}
-          </p>
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-            <p className="text-base text-gray-600">{workoutRecommendation}</p>
-          </div>
-        </div>
-
-        <div className="relative">
-          <div className="w-48 h-48 mx-auto flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-8xl animate-bounce mb-2">
-                🏸
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <button
-            onClick={onComplete}
-            className={getButtonClasses(
-              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-green-600"
-            )}
-          >
-            ✅ Workout Completed
-          </button>
-          
-          <button
-            onClick={onStopAndReturnHome}
-            className={getButtonClasses(
-              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-red-600"
-            )}
-          >
-            Stop Workout
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // Swimming workout display
-  if (workoutType === 'Swimming') {
-    return (
-      <div className="text-center space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Swimming ��‍♂️
-          </h2>
-          <p className="text-gray-600 mb-3">
-            {getMotivationalMessage(workoutType, mood)}
-          </p>
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-            <p className="text-base text-gray-600">{workoutRecommendation}</p>
-          </div>
-        </div>
-
-        <div className="relative">
-          <div className="w-48 h-48 mx-auto flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-8xl animate-pulse mb-2">
-                🏊‍♂️
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <button
-            onClick={onComplete}
-            className={getButtonClasses(
-              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-green-600"
-            )}
-          >
-            ✅ Workout Completed
-          </button>
-          
-          <button
-            onClick={onStopAndReturnHome}
-            className={getButtonClasses(
-              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-red-600"
-            )}
-          >
-            Stop Workout
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // Cycling workout display
-  if (workoutType === 'Cycling') {
-    return (
-      <div className="text-center space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Cycling 🚴‍♂️
-          </h2>
-          <p className="text-gray-600 mb-3">
-            {getMotivationalMessage(workoutType, mood)}
-          </p>
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-            <p className="text-base text-gray-600">{workoutRecommendation}</p>
-          </div>
-        </div>
-
-        <div className="relative">
-          <div className="w-48 h-48 mx-auto flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-8xl animate-pulse mb-2">
-                🚴‍♂️
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <button
-            onClick={onComplete}
-            className={getButtonClasses(
-              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-green-600"
-            )}
-          >
-            ✅ Workout Completed
-          </button>
-          
-          <button
-            onClick={onStopAndReturnHome}
-            className={getButtonClasses(
-              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-red-600"
-            )}
-          >
-            Stop Workout
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // Yoga workout display
-  if (workoutType === 'Yoga') {
-    return (
-      <div className="text-center space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Yoga 🧘‍♀️
-          </h2>
-          <p className="text-gray-600 mb-3">
-            {getMotivationalMessage(workoutType, mood)}
-          </p>
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-            <p className="text-base text-gray-600">{workoutRecommendation}</p>
-          </div>
-        </div>
-
-        <div className="relative">
-          <div className="w-48 h-48 mx-auto flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-8xl animate-pulse mb-2">
-                🧘‍♀️
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <button
-            onClick={onComplete}
-            className={getButtonClasses(
-              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-green-600"
-            )}
-          >
-            ✅ Workout Completed
-          </button>
-          
-          <button
-            onClick={onStopAndReturnHome}
-            className={getButtonClasses(
-              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-red-600"
-            )}
-          >
-            Stop Workout
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // Boxing workout display
-  if (workoutType === 'Boxing') {
-    return (
-      <div className="text-center space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Boxing 🥊
-          </h2>
-          <p className="text-gray-600 mb-3">
-            {getMotivationalMessage(workoutType, mood)}
-          </p>
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-            <p className="text-base text-gray-600">{workoutRecommendation}</p>
-          </div>
-        </div>
-
-        <div className="relative">
-          <div className="w-48 h-48 mx-auto flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-8xl animate-bounce mb-2">
-                🥊
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <button
-            onClick={onComplete}
-            className={getButtonClasses(
-              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-green-600"
-            )}
-          >
-            ✅ Workout Completed
-          </button>
-          
-          <button
-            onClick={onStopAndReturnHome}
-            className={getButtonClasses(
-              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-red-600"
-            )}
-          >
-            Stop Workout
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // Walking workout display
-  if (workoutType === 'Walking') {
-    return (
-      <div className="text-center space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Walking 🚶‍♀️
-          </h2>
-          <p className="text-gray-600 mb-3">
-            {getMotivationalMessage(workoutType, mood)}
-          </p>
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-            <p className="text-base text-gray-600">{workoutRecommendation}</p>
-          </div>
-        </div>
-
-        <div className="relative">
-          <div className="w-48 h-48 mx-auto flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-8xl animate-pulse mb-2">
-                🚶‍♀️
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <button
-            onClick={onComplete}
-            className={getButtonClasses(
-              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-green-600"
-            )}
-          >
-            ✅ Workout Completed
-          </button>
-          
-          <button
-            onClick={onStopAndReturnHome}
-            className={getButtonClasses(
-              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-red-600"
-            )}
-          >
-            Stop Workout
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // CrossFit workout display
-  if (workoutType === 'CrossFit') {
-    return (
-      <div className="text-center space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            CrossFit 🏋️‍♀️
-          </h2>
-          <p className="text-gray-600 mb-3">
-            {getMotivationalMessage(workoutType, mood)}
-          </p>
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-            <p className="text-base text-gray-600">{workoutRecommendation}</p>
-          </div>
-        </div>
-
-        <div className="relative">
-          <div className="w-48 h-48 mx-auto flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-8xl animate-pulse mb-2">
-                🏋️‍♀️
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <button
-            onClick={onComplete}
-            className={getButtonClasses(
-              "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-green-600"
-            )}
-          >
-            ✅ Workout Completed
-          </button>
-          
-          <button
-            onClick={onStopAndReturnHome}
-            className={getButtonClasses(
-              "w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-              "hover:bg-red-600"
-            )}
-          >
-            Stop Workout
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // Running workout display (fallback)
   return (
     <div className="text-center space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
-          {workoutType} 💪
+          {workoutType} {getWorkoutEmoji(workoutType)}
         </h2>
         <p className="text-gray-600 mb-3">
           {getMotivationalMessage(workoutType, mood)}
         </p>
-        <div className="bg-blue-50 p-3 rounded-lg">
-          <p className="text-sm text-gray-700 font-medium">Today's Workout:</p>
-          <p className="text-base text-gray-600">{workoutRecommendation}</p>
-        </div>
+        
+        {/* For custom workout types, show only custom input */}
+        {!workoutRecommendation || workoutRecommendation === 'Custom workout based on your mood' ? (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <label htmlFor="customWorkout" className="block text-sm font-medium text-gray-700 mb-2">
+              Your Custom Workout Steps:
+            </label>
+            <textarea
+              id="customWorkout"
+              value={customWorkoutSteps}
+              onChange={(e) => setCustomWorkoutSteps(e.target.value)}
+              placeholder="Enter your custom workout steps here..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+              rows="4"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Describe the exercises, sets, reps, or activities you want to do
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* Workout Recommendation */}
+            <div className="bg-blue-50 p-3 rounded-lg mb-4">
+              <p className="text-sm text-gray-700 font-medium mb-2">Recommended Workout:</p>
+              <p className="text-base text-gray-600">{workoutRecommendation}</p>
+            </div>
+
+            {/* Custom Workout Options */}
+            <div className="space-y-3">
+              <button
+                onClick={handleUseRecommendedWorkout}
+                className={`w-full p-3 rounded-lg border-2 transition-all duration-200 ${
+                  !useCustomWorkout 
+                    ? 'border-green-500 bg-green-50 text-green-700' 
+                    : 'border-gray-300 bg-gray-50 text-gray-600 hover:border-gray-400'
+                }`}
+              >
+                ✅ Use Recommended Workout
+              </button>
+              
+              <button
+                onClick={handleUseCustomWorkout}
+                className={`w-full p-3 rounded-lg border-2 transition-all duration-200 ${
+                  useCustomWorkout 
+                    ? 'border-blue-500 bg-blue-50 text-blue-700' 
+                    : 'border-gray-300 bg-gray-50 text-gray-600 hover:border-gray-400'
+                }`}
+              >
+                ✏️ Create Custom Workout
+              </button>
+            </div>
+
+            {/* Custom Workout Input */}
+            {showCustomInput && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <label htmlFor="customWorkout" className="block text-sm font-medium text-gray-700 mb-2">
+                  Your Custom Workout Steps:
+                </label>
+                <textarea
+                  id="customWorkout"
+                  value={customWorkoutSteps}
+                  onChange={(e) => setCustomWorkoutSteps(e.target.value)}
+                  placeholder="Enter your custom workout steps here..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+                  rows="4"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Describe the exercises, sets, reps, or activities you want to do
+                </p>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       <div className="relative">
         <div className="w-48 h-48 mx-auto flex items-center justify-center">
           <div className="text-center">
             <div className="text-8xl animate-pulse mb-2">
-              💪
+              {getWorkoutEmoji(workoutType)}
             </div>
           </div>
         </div>
@@ -867,11 +244,16 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
 
       <div className="space-y-3">
         <button
-          onClick={onComplete}
-          className={getButtonClasses(
-            "w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200",
-            "hover:bg-green-600"
-          )}
+          onClick={handleComplete}
+          disabled={(!workoutRecommendation || workoutRecommendation === 'Custom workout based on your mood') ? !customWorkoutSteps.trim() : (useCustomWorkout && !customWorkoutSteps.trim())}
+          className={`w-full font-semibold py-3 px-6 rounded-xl transition-colors duration-200 ${
+            (!workoutRecommendation || workoutRecommendation === 'Custom workout based on your mood') ? !customWorkoutSteps.trim()
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-green-500 text-white hover:bg-green-600'
+            : (useCustomWorkout && !customWorkoutSteps.trim())
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-green-500 text-white hover:bg-green-600'
+          }`}
         >
           ✅ Workout Completed
         </button>
@@ -887,7 +269,7 @@ const RunTimer = ({ mood, workoutType, workoutRecommendation, onComplete, onStop
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default RunTimer 
+export default RunTimer; 

@@ -23,6 +23,7 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [pendingWorkout, setPendingWorkout] = useState(null)
   const [customWorkouts, setCustomWorkouts] = useState([])
+  const [customWorkoutSteps, setCustomWorkoutSteps] = useState(null)
   const supportsHover = useHoverSupport()
   // const [streak, setStreak] = useState(0)
 
@@ -219,7 +220,12 @@ function App() {
     setCurrentView('timer')
   }
 
-  const handleTimerComplete = () => {
+  const handleTimerComplete = (workoutData) => {
+    // Handle the new data structure from RunTimer
+    if (workoutData && typeof workoutData === 'object') {
+      setWorkoutRecommendation(workoutData.workoutRecommendation || workoutRecommendation);
+      setCustomWorkoutSteps(workoutData.customWorkoutSteps || null);
+    }
     setCurrentView('reflection')
   }
 
@@ -235,6 +241,7 @@ function App() {
         setSelectedWorkoutDescription(null)
         setSelectedMood(null)
         setWorkoutRecommendation('')
+        setCustomWorkoutSteps(null)
       }, 100)
     }
   }
@@ -243,6 +250,7 @@ function App() {
     setCurrentView('mood-selector')
     setSelectedMood(null)
     setWorkoutRecommendation('')
+    setCustomWorkoutSteps(null)
   }
 
   const handleStopAndReturnHome = () => {
@@ -251,6 +259,7 @@ function App() {
     setSelectedWorkoutDescription(null)
     setSelectedMood(null)
     setWorkoutRecommendation('')
+    setCustomWorkoutSteps(null)
   }
 
   const handleReturnHome = () => {
@@ -259,6 +268,7 @@ function App() {
     setSelectedWorkoutDescription(null)
     setSelectedMood(null)
     setWorkoutRecommendation('')
+    setCustomWorkoutSteps(null)
   }
 
   const handleAboutClick = () => {
@@ -429,6 +439,8 @@ function App() {
               workoutType={selectedWorkoutType}
               workoutDescription={selectedWorkoutDescription}
               preRunMood={selectedMood}
+              workoutRecommendation={workoutRecommendation}
+              customWorkoutSteps={customWorkoutSteps}
               onComplete={handleReflectionComplete}
               onBackToMood={handleStopWorkout}
               onBackToWorkoutType={handleStopAndReturnHome}

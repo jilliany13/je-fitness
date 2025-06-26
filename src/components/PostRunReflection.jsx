@@ -6,6 +6,8 @@ const PostRunReflection = ({
   workoutType, 
   workoutDescription,
   preRunMood, 
+  workoutRecommendation,
+  customWorkoutSteps,
   onComplete, 
   onBackToMood,
   onBackToWorkoutType 
@@ -64,6 +66,8 @@ const PostRunReflection = ({
         workoutDescription,
         preRunMood,
         postRunMood,
+        workoutRecommendation,
+        customWorkoutSteps,
         notes: notes.trim(),
         timestamp: new Date().toISOString()
       };
@@ -105,6 +109,8 @@ const PostRunReflection = ({
         workoutDescription,
         preRunMood,
         postRunMood,
+        workoutRecommendation,
+        customWorkoutSteps,
         notes
       }));
       setShowAuthPrompt(true);

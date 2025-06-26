@@ -411,5 +411,35 @@ export const realtimeAuthService = {
       console.error('Error fetching custom workouts:', error);
       return [];
     }
+  },
+
+  // Update user data (for deleting workouts, etc.)
+  async updateUserData(updatedUserData) {
+    try {
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        throw new Error('No user logged in');
+      }
+
+      // Convert workoutHistory array back to object format for Firebase
+      const workoutHistoryObject = {};
+      if (updatedUserData.workoutHistory && Array.isArray(updatedUserData.workoutHistory)) {
+        updatedUserData.workoutHistory.forEach((workout, index) => {
+          workoutHistoryObject[`workout_${index}`] = workout;
+        });
+      }
+
+      const userDataToUpdate = {
+        ...updatedUserData,
+        workoutHistory: workoutHistoryObject
+      };
+
+      await set(ref(database, `users/${currentUser.uid}`), userDataToUpdate);
+      console.log('User data updated successfully');
+      return true;
+    } catch (error) {
+      console.error('Error updating user data:', error);
+      return false;
+    }
   }
 }; 
