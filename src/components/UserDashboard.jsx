@@ -120,38 +120,33 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
 
   const confirmDeleteWorkout = async () => {
     if (!workoutToDelete) return;
-    
+
     try {
-      // Remove the workout from the user's workout history
-      // Since workoutHistory is stored as an object in Firebase, we need to find the key
-      const updatedWorkoutHistory = {};
-      let foundWorkout = false;
-      
-      if (userData.workoutHistory && typeof userData.workoutHistory === 'object') {
-        Object.keys(userData.workoutHistory).forEach(key => {
-          const workout = userData.workoutHistory[key];
-          if (workout.timestamp !== workoutToDelete.timestamp) {
-            updatedWorkoutHistory[key] = workout;
-          } else {
-            foundWorkout = true;
-          }
-        });
+      // Always treat workoutHistory as an array
+      let workoutArray = [];
+      if (userData.workoutHistory) {
+        if (Array.isArray(userData.workoutHistory)) {
+          workoutArray = userData.workoutHistory;
+        } else if (typeof userData.workoutHistory === 'object') {
+          workoutArray = Object.values(userData.workoutHistory);
+        }
       }
-      
-      if (!foundWorkout) {
-        throw new Error('Workout not found in history');
-      }
-      
+
+      // Filter out the workout to delete by timestamp
+      const filteredWorkouts = workoutArray.filter(
+        workout => workout.timestamp !== workoutToDelete.timestamp
+      );
+
       // Update the user data
       const updatedUserData = {
         ...userData,
-        workoutHistory: updatedWorkoutHistory,
+        workoutHistory: filteredWorkouts,
         totalWorkouts: Math.max(0, userData.totalWorkouts - 1)
       };
-      
+
       // Save to Firebase
       await realtimeAuthService.updateUserData(updatedUserData);
-      
+
       // Update local state
       setUserData(updatedUserData);
       setShowDeleteModal(false);
@@ -180,6 +175,11 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
       }
     }
 
+    // Sort by timestamp descending (most recent first)
+    if (workoutArray.length > 0) {
+      workoutArray.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    }
+
     // Initialize default stats for new users
     const stats = {
       totalWorkouts: userData?.totalWorkouts || 0,
@@ -191,7 +191,7 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
     };
 
     if (workoutArray.length > 0) {
-      stats.allWorkouts = workoutArray.slice().reverse(); // Show all workouts, newest first
+      stats.allWorkouts = workoutArray; // Already sorted
       const now = new Date();
       const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
       const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
@@ -354,7 +354,7 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm text-gray-600">{new Date(workout.date).toLocaleDateString()}</div>
+                  <div className="text-sm text-gray-600">{new Date(workout.timestamp).toLocaleDateString()}</div>
                   <div className="text-xs text-blue-500 mt-1">Click to view details →</div>
                 </div>
               </button>
@@ -396,7 +396,7 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
               <div className="text-center py-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl">
                 <div className="text-4xl mb-2">{getWorkoutTypeEmoji(selectedWorkout.workoutType)}</div>
                 <h4 className="text-lg font-semibold text-gray-800">{selectedWorkout.workoutType}</h4>
-                <p className="text-sm text-gray-600">{new Date(selectedWorkout.date).toLocaleDateString()}</p>
+                <p className="text-sm text-gray-600">{new Date(selectedWorkout.timestamp).toLocaleDateString()}</p>
               </div>
 
               {/* Workout Details */}
@@ -474,15 +474,13 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
                 Close
               </button>
 
-              {/* Delete Button - Only show for custom workouts */}
-              {(selectedWorkout.workoutRecommendation === 'Custom workout based on your mood' || selectedWorkout.customWorkoutSteps) && (
-                <button
-                  onClick={() => handleDeleteWorkout(selectedWorkout)}
-                  className="w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-red-600 transition-all duration-200"
-                >
-                  Delete Workout
-                </button>
-              )}
+              {/* Delete Button - Show for all workouts */}
+              <button
+                onClick={() => handleDeleteWorkout(selectedWorkout)}
+                className="w-full bg-red-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-red-600 transition-all duration-200"
+              >
+                Delete Workout
+              </button>
             </div>
           </div>
         </div>
@@ -521,7 +519,7 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
                       {getMoodEmoji(workoutToDelete.preRunMood)} {workoutToDelete.preRunMood}
                     </div>
                     <div className="text-sm text-gray-500">
-                      {new Date(workoutToDelete.date).toLocaleDateString()}
+                      {new Date(workoutToDelete.timestamp).toLocaleDateString()}
                     </div>
                   </div>
                 </div>
