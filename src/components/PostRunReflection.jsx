@@ -4,6 +4,7 @@ import { realtimeAuthService } from '../services/realtimeAuthService';
 
 const PostRunReflection = ({ 
   workoutType, 
+  workoutDescription,
   preRunMood, 
   onComplete, 
   onBackToMood,
@@ -60,6 +61,7 @@ const PostRunReflection = ({
     try {
       const workoutData = {
         workoutType,
+        workoutDescription,
         preRunMood,
         postRunMood,
         notes: notes.trim(),
@@ -100,6 +102,7 @@ const PostRunReflection = ({
       // Save current workout state to localStorage
       localStorage.setItem('pendingWorkout', JSON.stringify({
         workoutType,
+        workoutDescription,
         preRunMood,
         postRunMood,
         notes
@@ -175,6 +178,20 @@ const PostRunReflection = ({
           Great job! 🎉
         </h2>
         <p className="text-gray-600 mb-4 text-center">{motivation}</p>
+        
+        {/* Workout Details */}
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
+          <div className="flex items-center justify-center space-x-3 mb-2">
+            <span className="text-2xl">{getWorkoutTypeEmoji(workoutType)}</span>
+            <h3 className="text-lg font-semibold text-gray-800">{workoutType}</h3>
+          </div>
+          {workoutDescription && (
+            <p className="text-sm text-gray-600 text-center">
+              {workoutDescription}
+            </p>
+          )}
+        </div>
+        
         <p className="text-lg font-semibold text-gray-800">
           How do you feel now?
         </p>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { realtimeAuthService } from './services/realtimeAuthService'
 import { useHoverSupport } from './components/useHoverSupport'
 import WorkoutTypeSelector from './components/WorkoutTypeSelector'
+import CustomWorkoutInput from './components/CustomWorkoutInput'
 import MoodSelector from './components/MoodSelector'
 import RunTimer from './components/RunTimer'
 import PostRunReflection from './components/PostRunReflection'
@@ -12,14 +13,16 @@ import UserDashboard from './components/UserDashboard'
 import StreakTracker from './components/StreakTracker'
 
 function App() {
-  const [currentView, setCurrentView] = useState('workout-selector') // workout-selector, login, signup, dashboard, mood-selector, timer, reflection, about
+  const [currentView, setCurrentView] = useState('workout-selector') // workout-selector, custom-workout, login, signup, dashboard, mood-selector, timer, reflection, about
   const [selectedWorkoutType, setSelectedWorkoutType] = useState(null)
+  const [selectedWorkoutDescription, setSelectedWorkoutDescription] = useState(null)
   const [selectedMood, setSelectedMood] = useState(null)
   const [workoutRecommendation, setWorkoutRecommendation] = useState('')
   const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [loading, setLoading] = useState(true)
   const [pendingWorkout, setPendingWorkout] = useState(null)
+  const [customWorkouts, setCustomWorkouts] = useState([])
   const supportsHover = useHoverSupport()
   // const [streak, setStreak] = useState(0)
 
@@ -33,11 +36,15 @@ function App() {
           if (userStats && userStats.username) {
             setUsername(userStats.username)
           }
+          // Load custom workouts for logged in user
+          const customWorkouts = await realtimeAuthService.getCustomWorkouts()
+          setCustomWorkouts(customWorkouts)
         } catch (error) {
           console.error('Error fetching user stats:', error)
         }
       } else {
         setUsername('')
+        setCustomWorkouts([])
       }
       setLoading(false)
       
@@ -149,9 +156,61 @@ function App() {
     setCurrentView('login')
   }
 
-  const handleWorkoutTypeSelect = (workoutType) => {
+  const handleWorkoutTypeSelect = (workoutType, description = null) => {
     setSelectedWorkoutType(workoutType)
+    // Set description for standard workouts or use provided description
+    if (description) {
+      setSelectedWorkoutDescription(description)
+    } else {
+      const descriptions = {
+        'Running': 'Cardio & outdoor running',
+        'Gym': 'Strength training & machines',
+        'Basketball': 'Court sports & drills',
+        'Swimming': 'Water sports & cardio',
+        'Tennis': 'Racket sports & agility',
+        'Volleyball': 'Court sports & team drills',
+        'Boxing': 'Combat sports & strength',
+        'Bowling': 'Lane sports & precision',
+        'Yoga': 'Mind-body wellness',
+        'Soccer': 'Field sports & team play',
+        'Table Tennis': 'Indoor racket sports',
+        'Cycling': 'Outdoor cardio & endurance',
+        'Badminton': 'Racket sports & reflexes',
+        'Walking': 'Low-impact cardio',
+        'CrossFit': 'High-intensity training'
+      }
+      setSelectedWorkoutDescription(descriptions[workoutType] || 'Custom workout')
+    }
     setCurrentView('mood-selector')
+  }
+
+  const handleCustomWorkoutClick = () => {
+    setCurrentView('custom-workout')
+  }
+
+  const handleCustomWorkoutCreate = async (customWorkout) => {
+    // If user wants to save the workout and is logged in
+    if (customWorkout.shouldSave && user) {
+      try {
+        await realtimeAuthService.saveCustomWorkout({
+          label: customWorkout.label,
+          description: customWorkout.description
+        })
+        // Reload custom workouts
+        const updatedCustomWorkouts = await realtimeAuthService.getCustomWorkouts()
+        setCustomWorkouts(updatedCustomWorkouts)
+      } catch (error) {
+        console.error('Error saving custom workout:', error)
+      }
+    }
+    
+    setSelectedWorkoutType(customWorkout.label)
+    setSelectedWorkoutDescription(customWorkout.description)
+    setCurrentView('mood-selector')
+  }
+
+  const handleCustomWorkoutBack = () => {
+    setCurrentView('workout-selector')
   }
 
   const handleMoodSelect = (mood, recommendation) => {
@@ -173,6 +232,7 @@ function App() {
       setTimeout(() => {
         setCurrentView('workout-selector')
         setSelectedWorkoutType(null)
+        setSelectedWorkoutDescription(null)
         setSelectedMood(null)
         setWorkoutRecommendation('')
       }, 100)
@@ -188,6 +248,7 @@ function App() {
   const handleStopAndReturnHome = () => {
     setCurrentView('workout-selector')
     setSelectedWorkoutType(null)
+    setSelectedWorkoutDescription(null)
     setSelectedMood(null)
     setWorkoutRecommendation('')
   }
@@ -195,6 +256,7 @@ function App() {
   const handleReturnHome = () => {
     setCurrentView('workout-selector')
     setSelectedWorkoutType(null)
+    setSelectedWorkoutDescription(null)
     setSelectedMood(null)
     setWorkoutRecommendation('')
   }
@@ -285,7 +347,11 @@ function App() {
               </div>
 
               {/* Workout type selector */}
-              <WorkoutTypeSelector onWorkoutTypeSelect={handleWorkoutTypeSelect} />
+              <WorkoutTypeSelector 
+                onWorkoutTypeSelect={handleWorkoutTypeSelect} 
+                onCustomWorkoutClick={handleCustomWorkoutClick}
+                customWorkouts={customWorkouts}
+              />
 
               {/* Info for guest users */}
               {!user && (
@@ -309,6 +375,14 @@ function App() {
                 </button>
               )}
             </div>
+          )}
+
+          {currentView === 'custom-workout' && (
+            <CustomWorkoutInput 
+              onWorkoutCreate={handleCustomWorkoutCreate}
+              onBack={handleCustomWorkoutBack}
+              isLoggedIn={!!user}
+            />
           )}
 
           {currentView === 'login' && (
@@ -353,6 +427,7 @@ function App() {
           {currentView === 'reflection' && (
             <PostRunReflection 
               workoutType={selectedWorkoutType}
+              workoutDescription={selectedWorkoutDescription}
               preRunMood={selectedMood}
               onComplete={handleReflectionComplete}
               onBackToMood={handleStopWorkout}

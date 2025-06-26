@@ -1,6 +1,6 @@
 import { useHoverSupport } from './useHoverSupport';
 
-const WorkoutTypeSelector = ({ onWorkoutTypeSelect }) => {
+const WorkoutTypeSelector = ({ onWorkoutTypeSelect, onCustomWorkoutClick, customWorkouts = [] }) => {
   const supportsHover = useHoverSupport();
   
   const workoutTypes = [
@@ -123,6 +123,41 @@ const WorkoutTypeSelector = ({ onWorkoutTypeSelect }) => {
       </div>
 
       <div className="max-h-96 overflow-y-auto space-y-3 px-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+        {/* Custom Workouts Section */}
+        {customWorkouts.length > 0 && (
+          <>
+            <div className="text-sm font-medium text-gray-700 mb-2 pt-2">
+              Your Custom Workouts
+            </div>
+            {customWorkouts.map((customWorkout, index) => (
+              <button
+                key={`custom-${customWorkout.id || index}`}
+                onClick={() => onWorkoutTypeSelect(customWorkout.label, customWorkout.description)}
+                className="w-full p-4 rounded-xl border-2 border-dashed transition-all duration-200 transform bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200 hover:from-indigo-100 hover:to-purple-100 hover:border-indigo-300 hover:scale-103"
+                style={{ 
+                  WebkitTapHighlightColor: 'transparent',
+                  WebkitTouchCallout: 'none',
+                  WebkitUserSelect: 'none',
+                  userSelect: 'none'
+                }}
+              >
+                <div className="flex items-center space-x-4">
+                  <span className="text-3xl">💪</span>
+                  <div className="text-left flex-1">
+                    <div className="font-semibold text-gray-800">{customWorkout.label}</div>
+                    <div className="text-sm text-gray-600">{customWorkout.description}</div>
+                  </div>
+                </div>
+              </button>
+            ))}
+            <div className="text-center text-sm text-gray-500 my-3">— or choose from —</div>
+          </>
+        )}
+
+        {/* Standard Workout Types */}
+        <div className={customWorkouts.length > 0 ? "text-sm font-medium text-gray-700 mb-2" : ""}>
+          {customWorkouts.length > 0 ? "Standard Workouts" : ""}
+        </div>
         {workoutTypes.map((workout, index) => (
           <button
             key={index}
@@ -146,6 +181,31 @@ const WorkoutTypeSelector = ({ onWorkoutTypeSelect }) => {
             </div>
           </button>
         ))}
+        
+        {/* Custom Workout Option */}
+        <div className="pt-2">
+          <div className="text-center text-sm text-gray-500 mb-3">— or —</div>
+          <button
+            onClick={onCustomWorkoutClick}
+            className={`w-full p-4 rounded-xl border-2 border-dashed transition-all duration-200 transform ${
+              supportsHover ? 'hover:scale-103 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:border-blue-300' : ''
+            } bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200`}
+            style={{ 
+              WebkitTapHighlightColor: 'transparent',
+              WebkitTouchCallout: 'none',
+              WebkitUserSelect: 'none',
+              userSelect: 'none'
+            }}
+          >
+            <div className="flex items-center space-x-4">
+              <span className="text-3xl">✨</span>
+              <div className="text-left flex-1">
+                <div className="font-semibold text-gray-800">Custom Workout</div>
+                <div className="text-sm text-gray-600">Create your own workout routine</div>
+              </div>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   )

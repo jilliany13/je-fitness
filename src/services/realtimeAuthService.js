@@ -367,5 +367,49 @@ export const realtimeAuthService = {
       console.error('Error creating user document manually:', error);
       return false;
     }
+  },
+
+  // Save custom workout template
+  async saveCustomWorkout(customWorkout) {
+    try {
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        throw new Error('No user logged in');
+      }
+
+      const customWorkoutKey = push(ref(database, `users/${currentUser.uid}/customWorkouts`)).key;
+      const customWorkoutEntry = {
+        ...customWorkout,
+        createdAt: new Date().toISOString(),
+        id: customWorkoutKey
+      };
+
+      await set(ref(database, `users/${currentUser.uid}/customWorkouts/${customWorkoutKey}`), customWorkoutEntry);
+      console.log('Custom workout saved successfully');
+      return true;
+    } catch (error) {
+      console.error('Error saving custom workout:', error);
+      return false;
+    }
+  },
+
+  // Get user's custom workouts
+  async getCustomWorkouts() {
+    try {
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        return [];
+      }
+
+      const customWorkoutsSnapshot = await get(ref(database, `users/${currentUser.uid}/customWorkouts`));
+      if (customWorkoutsSnapshot.exists()) {
+        const customWorkouts = customWorkoutsSnapshot.val();
+        return Object.values(customWorkouts);
+      }
+      return [];
+    } catch (error) {
+      console.error('Error fetching custom workouts:', error);
+      return [];
+    }
   }
 }; 
