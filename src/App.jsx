@@ -11,9 +11,11 @@ import Login from './components/Login'
 import Signup from './components/Signup'
 import UserDashboard from './components/UserDashboard'
 import StreakTracker from './components/StreakTracker'
+import CardioCrew from './components/CardioCrew'
+import FirebaseTest from './components/FirebaseTest'
 
 function App() {
-  const [currentView, setCurrentView] = useState('workout-selector') // workout-selector, custom-workout, login, signup, dashboard, mood-selector, timer, reflection, about
+  const [currentView, setCurrentView] = useState('workout-selector') // workout-selector, custom-workout, login, signup, dashboard, mood-selector, timer, reflection, about, cardio-crew, firebase-test
   const [selectedWorkoutType, setSelectedWorkoutType] = useState(null)
   const [selectedWorkoutDescription, setSelectedWorkoutDescription] = useState(null)
   const [selectedMood, setSelectedMood] = useState(null)
@@ -291,6 +293,14 @@ function App() {
     setCurrentView('dashboard')
   }
 
+  const handleShowCardioCrew = () => {
+    setCurrentView('cardio-crew')
+  }
+
+  const handleShowFirebaseTest = () => {
+    setCurrentView('firebase-test')
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -377,12 +387,20 @@ function App() {
 
               {/* Sign Out button at the bottom for logged in users */}
               {user && (
-                <button
-                  onClick={handleLogout}
-                  className="w-full bg-gray-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
-                >
-                  Sign Out
-                </button>
+                <div className="space-y-3">
+                  <button
+                    onClick={handleShowFirebaseTest}
+                    className="w-full bg-yellow-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all duration-200"
+                  >
+                    🔧 Test Firebase & Cardio Crew
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full bg-gray-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
+                  >
+                    Sign Out
+                  </button>
+                </div>
               )}
             </div>
           )}
@@ -412,7 +430,11 @@ function App() {
           )}
 
           {currentView === 'dashboard' && (
-            <UserDashboard onReturnToWorkout={handleStartWorkout} onLogout={handleLogout} />
+            <UserDashboard 
+              onReturnToWorkout={handleStartWorkout} 
+              onLogout={handleLogout}
+              onShowCardioCrew={handleShowCardioCrew}
+            />
           )}
           
           {currentView === 'mood-selector' && (
@@ -449,6 +471,14 @@ function App() {
 
           {currentView === 'about' && (
             <AboutPage onReturnHome={handleReturnHome} />
+          )}
+
+          {currentView === 'cardio-crew' && (
+            <CardioCrew onReturnToDashboard={handleShowDashboard} />
+          )}
+
+          {currentView === 'firebase-test' && (
+            <FirebaseTest />
           )}
         </div>
       </div>

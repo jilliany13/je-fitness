@@ -48,6 +48,21 @@ J&E Fitness is a personalized workout companion that adapts to your daily energy
 - **View Details:** Custom workouts appear in your workout history. Click on a custom workout to view the steps you entered.
 - **Delete Option:** You can delete custom workouts from your history if needed.
 
+### 👥 **Cardio Crew (Social Features)**
+- **Connect with Athletes:** View up to 10 other users with their usernames and current streaks
+- **Add to Crew:** Add other users to your "Cardio Crew" (friends list)
+- **Track Friends:** See your crew members' current workout streaks
+- **Manage Crew:** Remove users from your crew anytime
+- **Streak Rankings:** Users are sorted by streak (highest first) to find the most active athletes
+- **Emoji Avatars:** Choose from 25 sport-related emojis as your profile picture
+- **Personalized Profiles:** Express your fitness personality with custom emoji avatars
+
+### 📊 **Progress Tracking**
+- **Workout History:** Complete log of all your workouts with detailed information
+- **Streak Counting:** Track your consecutive workout days
+- **Mood Analytics:** Monitor how your mood changes before and after workouts
+- **Personal Dashboard:** View your statistics and recent activity
+
 ## 🚀 How It Works
 
 1. **Choose Your Workout** - Select from 15 different workout types
@@ -83,11 +98,15 @@ J&E Fitness is a personalized workout companion that adapts to your daily energy
 
 ## 💡 Future Enhancements
 
-- Workout history tracking
-- Streak counting
-- Social sharing features
+- ~~Workout history tracking~~ ✅ **Implemented**
+- ~~Streak counting~~ ✅ **Implemented**
+- ~~Social sharing features~~ ✅ **Implemented (Cardio Crew)**
 - More workout types
 - Advanced mood analytics
+- Workout challenges and competitions
+- Integration with fitness trackers
+- Personalized workout plans
+- Achievement badges and rewards
 
 ## 🤝 Contributing
 

@@ -112,7 +112,8 @@ export const realtimeAuthService = {
         totalWorkouts: 0,
         workoutHistory: {},
         streak: 0,
-        lastWorkoutDate: null
+        lastWorkoutDate: null,
+        emojiAvatar: '💪' // Default emoji avatar
       };
 
       console.log('Creating user document in database:', userData);
@@ -214,7 +215,8 @@ export const realtimeAuthService = {
           totalWorkouts: 0,
           workoutHistory: {},
           streak: 0,
-          lastWorkoutDate: null
+          lastWorkoutDate: null,
+          emojiAvatar: '💪' // Default emoji avatar
         };
         
         await set(userRef, userData);
@@ -357,7 +359,8 @@ export const realtimeAuthService = {
         totalWorkouts: 0,
         workoutHistory: {},
         streak: 0,
-        lastWorkoutDate: null
+        lastWorkoutDate: null,
+        emojiAvatar: '💪' // Default emoji avatar
       };
 
       await set(ref(database, `users/${currentUser.uid}`), userData);
@@ -440,6 +443,191 @@ export const realtimeAuthService = {
     } catch (error) {
       console.error('Error updating user data:', error);
       return false;
+    }
+  },
+
+  // Get all users (for Cardio Crew feature)
+  async getAllUsers() {
+    try {
+      console.log('Fetching all users from database...');
+      
+      // Check if user is authenticated
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        console.error('No authenticated user found');
+        throw new Error('User must be logged in to view other users');
+      }
+      
+      const usersSnapshot = await get(ref(database, 'users'));
+      console.log('Users snapshot exists:', usersSnapshot.exists());
+      console.log('Users snapshot value:', usersSnapshot.val());
+      
+      if (usersSnapshot.exists()) {
+        const users = usersSnapshot.val();
+        console.log('Raw users data:', users);
+        
+        // Convert to array and add uid to each user object
+        const usersArray = Object.entries(users).map(([uid, userData]) => ({
+          uid,
+          username: userData.username || 'Unknown User',
+          streak: userData.streak || 0,
+          totalWorkouts: userData.totalWorkouts || 0,
+          createdAt: userData.createdAt || null,
+          emojiAvatar: userData.emojiAvatar || '💪'
+        }));
+        
+        console.log('Processed users array:', usersArray);
+        return usersArray;
+      }
+      console.log('No users found in database');
+      return [];
+    } catch (error) {
+      console.error('Error fetching all users:', error);
+      console.error('Error details:', {
+        code: error.code,
+        message: error.message,
+        stack: error.stack
+      });
+      
+      // Provide more specific error messages
+      if (error.code === 'PERMISSION_DENIED') {
+        throw new Error('Database permission denied. Please check your Firebase database rules.');
+      } else if (error.message.includes('permission')) {
+        throw new Error('Permission error. Make sure your database rules allow reading user data.');
+      } else {
+        throw new Error(`Failed to fetch users: ${error.message}`);
+      }
+    }
+  },
+
+  // Get current user's friends
+  async getFriends() {
+    try {
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        return [];
+      }
+
+      const friendsSnapshot = await get(ref(database, `users/${currentUser.uid}/friends`));
+      if (friendsSnapshot.exists()) {
+        const friends = friendsSnapshot.val();
+        // Convert to array and add uid to each friend object
+        return Object.entries(friends).map(([uid, friendData]) => ({
+          uid,
+          ...friendData
+        }));
+      }
+      return [];
+    } catch (error) {
+      console.error('Error fetching friends:', error);
+      return [];
+    }
+  },
+
+  // Add a friend to current user's Cardio Crew
+  async addFriend(friendUid) {
+    try {
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        throw new Error('No user logged in');
+      }
+
+      // Get friend's user data
+      const friendSnapshot = await get(ref(database, `users/${friendUid}`));
+      if (!friendSnapshot.exists()) {
+        throw new Error('User not found');
+      }
+
+      const friendData = friendSnapshot.val();
+      
+      // Add friend to current user's friends list
+      await set(ref(database, `users/${currentUser.uid}/friends/${friendUid}`), {
+        username: friendData.username,
+        streak: friendData.streak || 0,
+        emojiAvatar: friendData.emojiAvatar || '💪',
+        addedAt: new Date().toISOString()
+      });
+
+      console.log('Friend added successfully');
+      return true;
+    } catch (error) {
+      console.error('Error adding friend:', error);
+      throw error;
+    }
+  },
+
+  // Remove a friend from current user's Cardio Crew
+  async removeFriend(friendUid) {
+    try {
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        throw new Error('No user logged in');
+      }
+
+      // Remove friend from current user's friends list
+      await set(ref(database, `users/${currentUser.uid}/friends/${friendUid}`), null);
+
+      console.log('Friend removed successfully');
+      return true;
+    } catch (error) {
+      console.error('Error removing friend:', error);
+      throw error;
+    }
+  },
+
+  // Update user's emoji avatar
+  async updateEmojiAvatar(emoji) {
+    try {
+      console.log('Updating emoji avatar to:', emoji);
+      
+      // Validate emoji parameter
+      if (!emoji || emoji.trim() === '') {
+        throw new Error('Invalid emoji: emoji cannot be empty or undefined');
+      }
+      
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        throw new Error('No user logged in');
+      }
+
+      console.log('Current user UID:', currentUser.uid);
+
+      // First, check if the user document exists
+      const userRef = ref(database, `users/${currentUser.uid}`);
+      const userSnapshot = await get(userRef);
+      
+      if (!userSnapshot.exists()) {
+        console.error('User document does not exist');
+        throw new Error('User profile not found. Please try logging in again.');
+      }
+
+      console.log('User document exists, updating emoji avatar...');
+
+      // Update the emoji avatar
+      await set(ref(database, `users/${currentUser.uid}/emojiAvatar`), emoji);
+
+      console.log('Emoji avatar updated successfully');
+      return true;
+    } catch (error) {
+      console.error('Error updating emoji avatar:', error);
+      console.error('Error details:', {
+        code: error.code,
+        message: error.message,
+        stack: error.stack
+      });
+      
+      // Provide more specific error messages
+      if (error.code === 'PERMISSION_DENIED') {
+        throw new Error('Database permission denied. Please check your Firebase database rules.');
+      } else if (error.message.includes('permission')) {
+        throw new Error('Permission error. Make sure your database rules allow writing to user data.');
+      } else if (error.message.includes('User profile not found')) {
+        throw new Error('User profile not found. Please try logging in again.');
+      } else if (error.message.includes('Invalid emoji')) {
+        throw new Error('Invalid emoji selected. Please try again.');
+      } else {
+        throw new Error(`Failed to update avatar: ${error.message}`);
+      }
     }
   }
 }; 

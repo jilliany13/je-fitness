@@ -77,10 +77,15 @@ Once everything works, you can secure your database:
 {
   "rules": {
     "users": {
+      ".read": "auth != null",
       "$uid": {
         ".read": "$uid === auth.uid",
         ".write": "$uid === auth.uid"
       }
+    },
+    "usernames": {
+      ".read": "auth != null",
+      ".write": "auth != null"
     },
     "test": {
       ".read": true,
@@ -91,6 +96,8 @@ Once everything works, you can secure your database:
 ```
 
 3. Click "Publish"
+
+**Note:** These rules allow authenticated users to read basic user information (needed for Cardio Crew feature) while keeping sensitive data protected. Users can only read/write their own detailed data.
 
 ## Troubleshooting
 
@@ -118,9 +125,17 @@ your-database/
 ├── users/
 │   └── [user-id]/
 │       ├── email: "user@example.com"
+│       ├── username: "user123"
+│       ├── emojiAvatar: "🏃‍♂️"
 │       ├── totalWorkouts: 5
 │       ├── streak: 3
 │       ├── lastWorkoutDate: "2024-01-15"
+│       ├── friends/
+│       │   └── [friend-uid]/
+│       │       ├── username: "friend123"
+│       │       ├── streak: 5
+│       │       ├── emojiAvatar: "🏋️‍♂️"
+│       │       └── addedAt: "2024-01-15T10:30:00.000Z"
 │       └── workoutHistory/
 │           ├── [workout-id-1]/
 │           │   ├── workoutType: "Running"

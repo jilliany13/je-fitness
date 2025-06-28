@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { realtimeAuthService } from '../services/realtimeAuthService';
 import FluencyDashboard from './FluencyDashboard';
+import EmojiSelector from './EmojiSelector';
 
-const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
+const UserDashboard = ({ onReturnToWorkout, onLogout, onShowCardioCrew }) => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -11,6 +12,7 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [workoutToDelete, setWorkoutToDelete] = useState(null);
+  const [showEmojiSelector, setShowEmojiSelector] = useState(false);
 
   const fetchUserData = async () => {
     try {
@@ -164,6 +166,29 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
     setWorkoutToDelete(null);
   };
 
+  const handleEmojiSelect = async (emoji) => {
+    try {
+      console.log('UserDashboard: Attempting to update emoji avatar to:', emoji);
+      
+      await realtimeAuthService.updateEmojiAvatar(emoji);
+      
+      // Update local state
+      setUserData(prev => ({ ...prev, emojiAvatar: emoji }));
+      
+    } catch (error) {
+      console.error('UserDashboard: Error updating emoji avatar:', error);
+      
+      // Show more specific error message
+      if (error.message.includes('permission') || error.message.includes('PERMISSION_DENIED')) {
+        alert('Database permission error. Please check your Firebase database rules. You may need to update them to allow writing to user data.');
+      } else if (error.message.includes('User profile not found')) {
+        alert('User profile not found. Please try logging out and logging back in.');
+      } else {
+        alert(`Failed to update avatar: ${error.message}`);
+      }
+    }
+  };
+
   const calculateStats = () => {
     // Normalize workoutHistory to always be an array
     let workoutArray = [];
@@ -254,6 +279,25 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
           >
             Skills
           </button>
+        </div>
+        
+        {/* User Avatar Section */}
+        <div className="bg-white border border-gray-200 rounded-xl p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="text-4xl">{userData?.emojiAvatar || '💪'}</div>
+              <div>
+                <div className="font-semibold text-gray-800">{userData?.username}</div>
+                <div className="text-sm text-gray-600">Your Avatar</div>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowEmojiSelector(true)}
+              className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 text-sm"
+            >
+              Change Avatar
+            </button>
+          </div>
         </div>
         
         {/* Start New Workout Button */}
@@ -368,10 +412,16 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
       </div>
 
       {/* Dashboard Action Buttons */}
-      <div className="flex">
+      <div className="flex space-x-3">
+        <button
+          onClick={onShowCardioCrew}
+          className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
+        >
+          💪 Cardio Crew
+        </button>
         <button
           onClick={onLogout}
-          className="w-full bg-gray-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
+          className="flex-1 bg-gray-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
         >
           Sign Out
         </button>
@@ -541,6 +591,15 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Emoji Selector Modal */}
+      {showEmojiSelector && (
+        <EmojiSelector
+          selectedEmoji={userData?.emojiAvatar || '💪'}
+          onEmojiSelect={handleEmojiSelect}
+          onClose={() => setShowEmojiSelector(false)}
+        />
       )}
     </div>
   );
