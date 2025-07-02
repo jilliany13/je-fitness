@@ -282,11 +282,11 @@ const UserDashboard = ({ onReturnToWorkout, onLogout, onShowCardioCrew }) => {
   return (
     <div className={`space-y-6 ${showFluency ? 'pointer-events-none select-none' : ''}`}>
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
           <h2 className="text-2xl font-bold text-gray-800">Your Dashboard</h2>
           <button
             onClick={onShowCardioCrew}
-            className="flex-1 ml-8 bg-gradient-to-r from-green-500 to-teal-600 text-white font-semibold py-1.5 px-3 rounded-lg hover:from-green-600 hover:to-teal-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 text-sm"
+            className="w-full sm:w-auto bg-gradient-to-r from-green-500 to-teal-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-green-600 hover:to-teal-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 text-base shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
           >
             💪 Cardio Crew
           </button>
