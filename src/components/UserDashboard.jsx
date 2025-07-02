@@ -285,31 +285,31 @@ const UserDashboard = ({ onReturnToWorkout, onLogout, onShowCardioCrew }) => {
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-800">Your Dashboard</h2>
           <button
-            onClick={() => setShowFluency(true)}
-            className="flex-1 ml-8 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:from-cyan-600 hover:to-blue-600 focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-all duration-200 text-base"
+            onClick={onShowCardioCrew}
+            className="flex-1 ml-8 bg-gradient-to-r from-green-500 to-teal-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-green-600 hover:to-teal-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 text-base"
           >
-            Skills
+            💪 Cardio Crew
           </button>
         </div>
         
         {/* User Avatar Section */}
-        <div className="bg-white border border-gray-200 rounded-xl p-4">
+        <button
+          onClick={() => setShowEmojiSelector(true)}
+          className="w-full bg-white border border-gray-200 rounded-xl p-4 hover:bg-gray-50 transition-all duration-200 cursor-pointer"
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="text-4xl">{userData?.emojiAvatar || '💪'}</div>
-              <div>
+              <div className="text-left">
                 <div className="font-semibold text-gray-800">{userData?.username}</div>
-                <div className="text-sm text-gray-600">Your Avatar</div>
+                <div className="text-sm text-gray-600">Tap to change avatar</div>
               </div>
             </div>
-            <button
-              onClick={() => setShowEmojiSelector(true)}
-              className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-600 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 text-sm"
-            >
-              Change Avatar
-            </button>
+            <div className="text-gray-400 text-sm">
+              ✏️
+            </div>
           </div>
-        </div>
+        </button>
         
         {/* Action Buttons */}
         <div className="flex space-x-3">
@@ -320,10 +320,10 @@ const UserDashboard = ({ onReturnToWorkout, onLogout, onShowCardioCrew }) => {
             Start New Workout
           </button>
           <button
-            onClick={onShowCardioCrew}
-            className="flex-1 bg-gradient-to-r from-green-500 to-teal-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-green-600 hover:to-teal-700 transition-all duration-200"
+            onClick={() => setShowFluency(true)}
+            className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold py-3 px-6 rounded-xl hover:from-cyan-600 hover:to-blue-600 transition-all duration-200"
           >
-            💪 Cardio Crew
+            Skills
           </button>
         </div>
       </div>

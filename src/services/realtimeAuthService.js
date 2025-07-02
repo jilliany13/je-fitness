@@ -524,6 +524,46 @@ export const realtimeAuthService = {
     }
   },
 
+  // Get people who added the current user to their crew
+  async getPeopleWhoAddedMe() {
+    try {
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        return [];
+      }
+
+      // Get all users and check who has the current user in their friends list
+      const usersSnapshot = await get(ref(database, 'users'));
+      if (!usersSnapshot.exists()) {
+        return [];
+      }
+
+      const users = usersSnapshot.val();
+      const peopleWhoAddedMe = [];
+
+      // Check each user's friends list
+      for (const [uid, userData] of Object.entries(users)) {
+        if (uid === currentUser.uid) continue; // Skip current user
+        
+        if (userData.friends && userData.friends[currentUser.uid]) {
+          // This user has the current user in their friends list
+          peopleWhoAddedMe.push({
+            uid,
+            username: userData.username || 'Unknown User',
+            streak: userData.streak || 0,
+            emojiAvatar: userData.emojiAvatar || '💪',
+            addedAt: userData.friends[currentUser.uid].addedAt
+          });
+        }
+      }
+
+      return peopleWhoAddedMe;
+    } catch (error) {
+      console.error('Error fetching people who added me:', error);
+      return [];
+    }
+  },
+
   // Add a friend to current user's Cardio Crew
   async addFriend(friendUid) {
     try {

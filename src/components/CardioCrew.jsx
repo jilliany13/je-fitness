@@ -7,7 +7,9 @@ const CardioCrew = ({ onReturnToDashboard }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [friends, setFriends] = useState([]);
+  const [peopleWhoAddedMe, setPeopleWhoAddedMe] = useState([]);
   const [addingFriend, setAddingFriend] = useState(null);
+  const [activeTab, setActiveTab] = useState('my-crew'); // 'my-crew' or 'added-me'
 
   useEffect(() => {
     fetchData();
@@ -58,7 +60,7 @@ const CardioCrew = ({ onReturnToDashboard }) => {
         setUsers([]);
       }
       
-      // Get current user's friends
+      // Get current user's friends (people I added)
       try {
         const userFriends = await realtimeAuthService.getFriends();
         console.log('Current user friends:', userFriends);
@@ -67,6 +69,17 @@ const CardioCrew = ({ onReturnToDashboard }) => {
         console.error('Error fetching friends:', friendsError);
         setFriends([]);
         // Don't show error for friends since it's not critical
+      }
+
+      // Get people who added me
+      try {
+        const peopleWhoAddedMe = await realtimeAuthService.getPeopleWhoAddedMe();
+        console.log('People who added me:', peopleWhoAddedMe);
+        setPeopleWhoAddedMe(peopleWhoAddedMe);
+      } catch (addedMeError) {
+        console.error('Error fetching people who added me:', addedMeError);
+        setPeopleWhoAddedMe([]);
+        // Don't show error since it's not critical
       }
       
     } catch (error) {
@@ -151,35 +164,96 @@ const CardioCrew = ({ onReturnToDashboard }) => {
           </button>
         </div>
 
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-white mb-4">
-            Your Crew ({friends.length})
-          </h2>
-          {friends.length === 0 ? (
-            <p className="text-white text-opacity-80 text-center py-4">
-              No crew members yet. Add some friends below!
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {friends.map((friend) => (
-                                                    <div key={friend.uid} className="flex items-center justify-between p-3 bg-white bg-opacity-20 rounded-2xl">
-                    <div className="flex items-center space-x-3">
-                      <div className="text-2xl">{friend.emojiAvatar || '💪'}</div>
-                      <div>
-                        <div className="font-semibold text-white">{friend.username}</div>
-                        <div className="text-sm text-white text-opacity-80">
-                          {friend.streak || 0} day streak
+                <div className="mb-6">
+          <div className="flex space-x-2 mb-4">
+            <button
+              onClick={() => setActiveTab('my-crew')}
+              className={`flex-1 py-2 px-4 rounded-xl font-semibold transition-all duration-200 ${
+                activeTab === 'my-crew'
+                  ? 'bg-white bg-opacity-30 text-white'
+                  : 'bg-white bg-opacity-10 text-white text-opacity-70 hover:bg-opacity-20'
+              }`}
+            >
+              Your Crew ({friends.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('added-me')}
+              className={`flex-1 py-2 px-4 rounded-xl font-semibold transition-all duration-200 ${
+                activeTab === 'added-me'
+                  ? 'bg-white bg-opacity-30 text-white'
+                  : 'bg-white bg-opacity-10 text-white text-opacity-70 hover:bg-opacity-20'
+              }`}
+            >
+              Added You ({peopleWhoAddedMe.length})
+            </button>
+          </div>
+
+          {activeTab === 'my-crew' && (
+            <div>
+              {friends.length === 0 ? (
+                <p className="text-white text-opacity-80 text-center py-4">
+                  No crew members yet. Add some friends below!
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {friends.map((friend) => (
+                    <div key={friend.uid} className="flex items-center justify-between p-3 bg-white bg-opacity-20 rounded-2xl">
+                      <div className="flex items-center space-x-3">
+                        <div className="text-2xl">{friend.emojiAvatar || '💪'}</div>
+                        <div>
+                          <div className="font-semibold text-white">{friend.username}</div>
+                          <div className="text-sm text-white text-opacity-80">
+                            {friend.streak || 0} day streak
+                          </div>
                         </div>
                       </div>
+                      <button
+                        onClick={() => handleRemoveFriend(friend.uid)}
+                        className="text-red-300 hover:text-red-200 text-sm font-medium ml-4"
+                      >
+                        Remove
+                      </button>
                     </div>
-                    <button
-                      onClick={() => handleRemoveFriend(friend.uid)}
-                      className="text-red-300 hover:text-red-200 text-sm font-medium ml-4"
-                    >
-                      Remove
-                    </button>
-                  </div>
-              ))}
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'added-me' && (
+            <div>
+              {peopleWhoAddedMe.length === 0 ? (
+                <p className="text-white text-opacity-80 text-center py-4">
+                  No one has added you to their crew yet.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {peopleWhoAddedMe.map((person) => (
+                    <div key={person.uid} className="flex items-center justify-between p-3 bg-white bg-opacity-20 rounded-2xl">
+                      <div className="flex items-center space-x-3">
+                        <div className="text-2xl">{person.emojiAvatar || '💪'}</div>
+                        <div>
+                          <div className="font-semibold text-white">{person.username}</div>
+                          <div className="text-sm text-white text-opacity-80">
+                            {person.streak || 0} day streak
+                          </div>
+                        </div>
+                      </div>
+                      {isFriend(person.uid) ? (
+                        <span className="text-green-300 text-sm font-medium ml-4">✓ Added</span>
+                      ) : (
+                        <button
+                          onClick={() => handleAddFriend(person)}
+                          disabled={addingFriend === person.uid}
+                          className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-2 px-4 rounded-2xl hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 text-sm disabled:opacity-50 ml-4"
+                        >
+                          Add
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
