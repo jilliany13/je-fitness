@@ -91,9 +91,6 @@ const CardioCrew = ({ onReturnToDashboard }) => {
       // Update local state
       setFriends(prev => [...prev, userToAdd]);
       
-      // Show success message
-      alert(`Added ${userToAdd.username} to your Cardio Crew! 💪`);
-      
     } catch (error) {
       console.error('Error adding friend:', error);
       alert('Failed to add friend. Please try again.');
@@ -108,8 +105,6 @@ const CardioCrew = ({ onReturnToDashboard }) => {
       
       // Update local state
       setFriends(prev => prev.filter(friend => friend.uid !== friendUid));
-      
-      alert('Removed from your Cardio Crew');
       
     } catch (error) {
       console.error('Error removing friend:', error);
@@ -130,135 +125,109 @@ const CardioCrew = ({ onReturnToDashboard }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex flex-col items-center justify-center p-4 rounded-3xl">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 pt-8">
           <h1 className="text-4xl font-bold text-white mb-2">
             💪 Cardio Crew
           </h1>
           <p className="text-white opacity-90">
             Connect with fellow fitness enthusiasts
           </p>
-          
+        </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-2xl">
+            {error}
+          </div>
+        )}
+
+        <div className="mb-6">
           <button
-            onClick={fetchData}
-            disabled={loading}
-            className="mt-4 bg-white bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-200 disabled:opacity-50"
+            onClick={onReturnToDashboard}
+            className="w-full bg-white bg-opacity-20 text-white font-semibold py-3 px-6 rounded-2xl hover:bg-opacity-30 focus:ring-2 focus:ring-white focus:ring-offset-2 transition-all duration-200"
           >
-            {loading ? 'Refreshing...' : '🔄 Refresh'}
+            ← Back to Dashboard
           </button>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-6">
-          {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
-              {error}
-            </div>
-          )}
-
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              Your Profile
-            </h2>
-            <button
-              onClick={onReturnToDashboard}
-              className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border-2 border-blue-200 hover:from-blue-100 hover:to-purple-100 transition-all duration-200 cursor-pointer"
-            >
-              <div className="flex items-center space-x-3 flex-1">
-                <div className="text-2xl">{currentUser?.emojiAvatar || '💪'}</div>
-                <div className="text-left">
-                  <div className="font-semibold text-gray-800">{currentUser?.username}</div>
-                  <div className="text-sm text-gray-600">
-                    {currentUser?.streak || 0} day streak
-                  </div>
-                </div>
-              </div>
-              <div className="text-blue-600 text-sm font-medium">
-                You
-              </div>
-            </button>
-          </div>
-
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              Your Crew ({friends.length})
-            </h2>
-            {friends.length === 0 ? (
-              <p className="text-gray-600 text-center py-4">
-                No crew members yet. Add some friends below!
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {friends.map((friend) => (
-                  <div key={friend.uid} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-white mb-4">
+            Your Crew ({friends.length})
+          </h2>
+          {friends.length === 0 ? (
+            <p className="text-white text-opacity-80 text-center py-4">
+              No crew members yet. Add some friends below!
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {friends.map((friend) => (
+                                                    <div key={friend.uid} className="flex items-center justify-between p-3 bg-white bg-opacity-20 rounded-2xl">
                     <div className="flex items-center space-x-3">
                       <div className="text-2xl">{friend.emojiAvatar || '💪'}</div>
                       <div>
-                        <div className="font-semibold text-gray-800">{friend.username}</div>
-                        <div className="text-sm text-gray-600">
+                        <div className="font-semibold text-white">{friend.username}</div>
+                        <div className="text-sm text-white text-opacity-80">
                           {friend.streak || 0} day streak
                         </div>
                       </div>
                     </div>
                     <button
                       onClick={() => handleRemoveFriend(friend.uid)}
-                      className="text-red-500 hover:text-red-700 text-sm font-medium"
+                      className="text-red-300 hover:text-red-200 text-sm font-medium ml-4"
                     >
                       Remove
                     </button>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              Discover Athletes
-            </h2>
-            {users.length === 0 ? (
-              <p className="text-gray-600 text-center py-4">
-                No other users found.
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {users.map((user) => (
-                  <div key={user.uid} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-white mb-4">
+            Discover Athletes
+          </h2>
+          {users.length === 0 ? (
+            <p className="text-white text-opacity-80 text-center py-4">
+              No other users found.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {users.map((user) => (
+                                                    <div key={user.uid} className="flex items-center justify-between p-4 bg-white bg-opacity-25 rounded-2xl border border-white border-opacity-20 shadow-lg">
                     <div className="flex items-center space-x-3">
                       <div className="text-2xl">{user.emojiAvatar || '💪'}</div>
                       <div>
-                        <div className="font-semibold text-gray-800">{user.username}</div>
-                        <div className="text-sm text-gray-600">
+                        <div className="font-semibold text-white">{user.username}</div>
+                        <div className="text-sm text-white text-opacity-80">
                           {user.streak || 0} day streak
                         </div>
                       </div>
                     </div>
                     {isFriend(user.uid) ? (
-                      <span className="text-green-600 text-sm font-medium">✓ Added</span>
-                    ) : user.uid === currentUser?.uid || user.username === currentUser?.username ? (
-                      <span className="text-gray-400 text-sm font-medium">You</span>
+                      <span className="text-green-300 text-sm font-medium ml-4">✓ Added</span>
                     ) : (
                       <button
                         onClick={() => handleAddFriend(user)}
                         disabled={addingFriend === user.uid}
-                        className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 text-sm disabled:opacity-50"
+                        className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-2 px-4 rounded-2xl hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 text-sm disabled:opacity-50 ml-4"
                       >
-                        {addingFriend === user.uid ? 'Adding...' : 'Add to Crew'}
+                        Add
                       </button>
                     )}
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <button
-            onClick={onReturnToDashboard}
-            className="w-full bg-gray-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
-          >
-            Back to Dashboard
-          </button>
+              ))}
+            </div>
+          )}
         </div>
+
+        <button
+          onClick={onReturnToDashboard}
+          className="w-full bg-white bg-opacity-20 text-white font-semibold py-3 px-6 rounded-2xl hover:bg-opacity-30 focus:ring-2 focus:ring-white focus:ring-offset-2 transition-all duration-200"
+        >
+          Back to Dashboard
+        </button>
       </div>
     </div>
   );

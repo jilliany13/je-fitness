@@ -389,12 +389,6 @@ function App() {
               {user && (
                 <div className="space-y-3">
                   <button
-                    onClick={handleShowFirebaseTest}
-                    className="w-full bg-yellow-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all duration-200"
-                  >
-                    🔧 Test Firebase & Cardio Crew
-                  </button>
-                  <button
                     onClick={handleLogout}
                     className="w-full bg-gray-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
                   >

@@ -13,6 +13,7 @@ const UserDashboard = ({ onReturnToWorkout, onLogout, onShowCardioCrew }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [workoutToDelete, setWorkoutToDelete] = useState(null);
   const [showEmojiSelector, setShowEmojiSelector] = useState(false);
+  const [friends, setFriends] = useState([]);
 
   const fetchUserData = async () => {
     try {
@@ -21,6 +22,16 @@ const UserDashboard = ({ onReturnToWorkout, onLogout, onShowCardioCrew }) => {
       console.log('User data received:', data);
       setUserData(data);
       setError(null);
+      
+      // Fetch friends data for Cardio Crew count
+      try {
+        const userFriends = await realtimeAuthService.getFriends();
+        console.log('User friends:', userFriends);
+        setFriends(userFriends);
+      } catch (friendsError) {
+        console.error('Error fetching friends:', friendsError);
+        setFriends([]);
+      }
     } catch (error) {
       console.error('Error fetching user data:', error);
       setError(error.message);
@@ -275,7 +286,7 @@ const UserDashboard = ({ onReturnToWorkout, onLogout, onShowCardioCrew }) => {
           <h2 className="text-2xl font-bold text-gray-800">Your Dashboard</h2>
           <button
             onClick={() => setShowFluency(true)}
-            className="flex-1 ml-8 bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:from-green-500 hover:to-blue-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 text-base"
+            className="flex-1 ml-8 bg-gradient-to-r from-orange-400 to-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:from-orange-500 hover:to-red-600 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-200 text-base"
           >
             Skills
           </button>
@@ -293,20 +304,28 @@ const UserDashboard = ({ onReturnToWorkout, onLogout, onShowCardioCrew }) => {
             </div>
             <button
               onClick={() => setShowEmojiSelector(true)}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 text-sm"
+              className="bg-gradient-to-r from-pink-500 to-rose-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-pink-600 hover:to-rose-700 focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 transition-all duration-200 text-sm"
             >
               Change Avatar
             </button>
           </div>
         </div>
         
-        {/* Start New Workout Button */}
-        <button
-          onClick={onReturnToWorkout}
-          className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200"
-        >
-          Start New Workout
-        </button>
+        {/* Action Buttons */}
+        <div className="flex space-x-3">
+          <button
+            onClick={onReturnToWorkout}
+            className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-200"
+          >
+            Start New Workout
+          </button>
+          <button
+            onClick={onShowCardioCrew}
+            className="flex-1 bg-gradient-to-r from-green-500 to-teal-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-green-600 hover:to-teal-700 transition-all duration-200"
+          >
+            💪 Cardio Crew
+          </button>
+        </div>
       </div>
 
       {/* Overview Stats */}
@@ -320,8 +339,8 @@ const UserDashboard = ({ onReturnToWorkout, onLogout, onShowCardioCrew }) => {
           <div className="text-sm text-green-700">Current Streak</div>
         </div>
         <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl">
-          <div className="text-2xl font-bold text-purple-600">{stats.weeklyWorkouts}</div>
-          <div className="text-sm text-purple-700">This Week</div>
+          <div className="text-2xl font-bold text-purple-600">{friends.length}</div>
+          <div className="text-sm text-purple-700">Cardio Crew</div>
         </div>
         <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl">
           <div className="text-2xl font-bold text-orange-600">{stats.monthlyWorkouts}</div>
@@ -414,14 +433,8 @@ const UserDashboard = ({ onReturnToWorkout, onLogout, onShowCardioCrew }) => {
       {/* Dashboard Action Buttons */}
       <div className="flex space-x-3">
         <button
-          onClick={onShowCardioCrew}
-          className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
-        >
-          💪 Cardio Crew
-        </button>
-        <button
           onClick={onLogout}
-          className="flex-1 bg-gray-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
+          className="w-full bg-gray-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
         >
           Sign Out
         </button>
