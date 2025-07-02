@@ -286,7 +286,7 @@ const UserDashboard = ({ onReturnToWorkout, onLogout, onShowCardioCrew }) => {
           <h2 className="text-2xl font-bold text-gray-800">Your Dashboard</h2>
           <button
             onClick={() => setShowFluency(true)}
-            className="flex-1 ml-8 bg-gradient-to-r from-orange-400 to-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:from-orange-500 hover:to-red-600 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-200 text-base"
+            className="flex-1 ml-8 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:from-cyan-600 hover:to-blue-600 focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-all duration-200 text-base"
           >
             Skills
           </button>
@@ -304,7 +304,7 @@ const UserDashboard = ({ onReturnToWorkout, onLogout, onShowCardioCrew }) => {
             </div>
             <button
               onClick={() => setShowEmojiSelector(true)}
-              className="bg-gradient-to-r from-pink-500 to-rose-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-pink-600 hover:to-rose-700 focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 transition-all duration-200 text-sm"
+              className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-600 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 text-sm"
             >
               Change Avatar
             </button>
@@ -334,6 +334,10 @@ const UserDashboard = ({ onReturnToWorkout, onLogout, onShowCardioCrew }) => {
           <div className="text-2xl font-bold text-blue-600">{stats.totalWorkouts}</div>
           <div className="text-sm text-blue-700">Total Workouts</div>
         </div>
+        <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl">
+          <div className="text-2xl font-bold text-orange-600">{stats.monthlyWorkouts}</div>
+          <div className="text-sm text-orange-700">This Month</div>
+        </div>
         <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl">
           <div className="text-2xl font-bold text-green-600">{userData?.streak || 0}</div>
           <div className="text-sm text-green-700">Current Streak</div>
@@ -341,10 +345,6 @@ const UserDashboard = ({ onReturnToWorkout, onLogout, onShowCardioCrew }) => {
         <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl">
           <div className="text-2xl font-bold text-purple-600">{friends.length}</div>
           <div className="text-sm text-purple-700">Cardio Crew</div>
-        </div>
-        <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl">
-          <div className="text-2xl font-bold text-orange-600">{stats.monthlyWorkouts}</div>
-          <div className="text-sm text-orange-700">This Month</div>
         </div>
       </div>
 
