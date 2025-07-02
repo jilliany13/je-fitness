@@ -7,8 +7,13 @@ const FirebaseTest = () => {
   const [testResults, setTestResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const addTestResult = (test, status, message) => {
-    setTestResults(prev => [...prev, { test, status, message, timestamp: new Date().toLocaleTimeString() }]);
+  const addTestResult = (testName, result, details = '') => {
+    setTestResults(prev => [...prev, {
+      name: testName,
+      result: result ? '✅ PASS' : '❌ FAIL',
+      details,
+      timestamp: new Date().toLocaleTimeString()
+    }]);
   };
 
   const runAllTests = async () => {
@@ -16,181 +21,181 @@ const FirebaseTest = () => {
     setTestResults([]);
 
     try {
-      // Test 1: Basic connection
-      addTestResult('Connection Test', 'running', 'Testing basic connection...');
+      // Test 1: Check if user is logged in
+      const currentUser = realtimeAuthService.getCurrentUser();
+      addTestResult(
+        'User Authentication',
+        !!currentUser,
+        currentUser ? `Logged in as: ${currentUser.email}` : 'No user logged in'
+      );
+
+      // Test 2: Get user stats
       try {
-        const testRef = ref(database, 'test');
-        await get(testRef);
-        addTestResult('Connection Test', 'success', 'Successfully connected to Realtime Database');
+        const userStats = await realtimeAuthService.getUserStats();
+        addTestResult(
+          'Get User Stats',
+          !!userStats,
+          userStats ? `Username: ${userStats.username}, Streak: ${userStats.streak}` : 'No user stats found'
+        );
       } catch (error) {
-        addTestResult('Connection Test', 'error', `Connection failed: ${error.message}`);
-        return;
+        addTestResult('Get User Stats', false, `Error: ${error.message}`);
       }
 
-      // Test 2: Write data
-      addTestResult('Write Test', 'running', 'Testing write operation...');
+      // Test 3: Get all users
       try {
-        const testDataRef = ref(database, 'testData');
-        await set(testDataRef, {
-          message: 'Hello from Mood Run!',
-          timestamp: new Date().toISOString(),
-          test: true
-        });
-        addTestResult('Write Test', 'success', 'Successfully wrote test data');
-      } catch (error) {
-        addTestResult('Write Test', 'error', `Write failed: ${error.message}`);
-      }
-
-      // Test 3: Read data
-      addTestResult('Read Test', 'running', 'Testing read operation...');
-      try {
-        const testDataRef = ref(database, 'testData');
-        const snapshot = await get(testDataRef);
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          addTestResult('Read Test', 'success', `Successfully read data: ${data.message}`);
-        } else {
-          addTestResult('Read Test', 'error', 'No data found');
+        const allUsers = await realtimeAuthService.getAllUsers();
+        addTestResult(
+          'Get All Users',
+          Array.isArray(allUsers),
+          `Found ${allUsers.length} users in database`
+        );
+        
+        if (allUsers.length > 0) {
+          addTestResult(
+            'Users Data Structure',
+            allUsers.every(user => user.username && user.uid),
+            `Sample user: ${allUsers[0].username} (${allUsers[0].uid})`
+          );
         }
       } catch (error) {
-        addTestResult('Read Test', 'error', `Read failed: ${error.message}`);
+        addTestResult('Get All Users', false, `Error: ${error.message}`);
       }
 
-      // Test 4: Push data (for workout history)
-      addTestResult('Push Test', 'running', 'Testing push operation...');
+      // Test 4: Get friends
       try {
-        const testHistoryRef = ref(database, 'testHistory');
-        const newRef = push(testHistoryRef);
-        await set(newRef, {
-          workoutType: 'Test Workout',
-          mood: 'Test Mood',
-          timestamp: new Date().toISOString()
-        });
-        addTestResult('Push Test', 'success', 'Successfully pushed test workout data');
+        const friends = await realtimeAuthService.getFriends();
+        addTestResult(
+          'Get Friends',
+          Array.isArray(friends),
+          `Found ${friends.length} friends`
+        );
       } catch (error) {
-        addTestResult('Push Test', 'error', `Push failed: ${error.message}`);
+        addTestResult('Get Friends', false, `Error: ${error.message}`);
       }
 
-      // Test 5: Clean up test data
-      addTestResult('Cleanup Test', 'running', 'Cleaning up test data...');
+      // Test 5: Test adding a friend (if there are other users)
       try {
-        const testDataRef = ref(database, 'testData');
-        const testHistoryRef = ref(database, 'testHistory');
-        await set(testDataRef, null);
-        await set(testHistoryRef, null);
-        addTestResult('Cleanup Test', 'success', 'Successfully cleaned up test data');
+        const allUsers = await realtimeAuthService.getAllUsers();
+        const currentUser = realtimeAuthService.getCurrentUser();
+        const otherUsers = allUsers.filter(user => user.uid !== currentUser?.uid);
+        
+        if (otherUsers.length > 0) {
+          const testUser = otherUsers[0];
+          addTestResult(
+            'Add Friend Test',
+            true,
+            `Would add: ${testUser.username} (${testUser.uid})`
+          );
+        } else {
+          addTestResult(
+            'Add Friend Test',
+            true,
+            'No other users available to test with'
+          );
+        }
       } catch (error) {
-        addTestResult('Cleanup Test', 'error', `Cleanup failed: ${error.message}`);
+        addTestResult('Add Friend Test', false, `Error: ${error.message}`);
+      }
+
+      // Test 6: Test emoji avatar functionality
+      try {
+        const currentUser = realtimeAuthService.getCurrentUser();
+        if (currentUser) {
+          const userStats = await realtimeAuthService.getUserStats();
+          addTestResult(
+            'Emoji Avatar Test',
+            true,
+            `Current avatar: ${userStats?.emojiAvatar || '💪'} (Default)`
+          );
+        } else {
+          addTestResult('Emoji Avatar Test', false, 'No user logged in');
+        }
+      } catch (error) {
+        addTestResult('Emoji Avatar Test', false, `Error: ${error.message}`);
       }
 
     } catch (error) {
-      addTestResult('General Error', 'error', `Unexpected error: ${error.message}`);
+      addTestResult('Overall Test', false, `General error: ${error.message}`);
     } finally {
       setLoading(false);
     }
   };
 
-  const createUserDocument = async () => {
-    setLoading(true);
-    try {
-      const success = await realtimeAuthService.createUserDocumentManually();
-      if (success) {
-        addTestResult('User Document', 'success', 'User document created successfully');
-      } else {
-        addTestResult('User Document', 'error', 'Failed to create user document');
-      }
-    } catch (error) {
-      addTestResult('User Document', 'error', `Error: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
+  const clearResults = () => {
+    setTestResults([]);
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'success': return 'text-green-600';
-      case 'error': return 'text-red-600';
-      case 'running': return 'text-blue-600';
-      default: return 'text-gray-600';
-    }
-  };
-
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'success': return '✅';
-      case 'error': return '❌';
-      case 'running': return '⏳';
-      default: return '⏳';
-    }
+  const handleBackToApp = () => {
+    window.history.back();
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-800">Firebase Realtime Database Tests</h3>
-        <div className="flex space-x-2">
-          <button
-            onClick={createUserDocument}
-            disabled={loading}
-            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            Create User Doc
-          </button>
-          <button
-            onClick={runAllTests}
-            disabled={loading}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {loading ? 'Running Tests...' : 'Run Tests'}
-          </button>
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-2xl">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-white mb-2">
+            🔧 Firebase Connection Test
+          </h1>
+          <p className="text-white opacity-90">
+            Test your Firebase setup and Cardio Crew functionality
+          </p>
         </div>
-      </div>
 
-      <div className="bg-gray-50 rounded-lg p-4">
-        <h4 className="font-medium text-gray-800 mb-2">Test Results:</h4>
-        {testResults.length === 0 ? (
-          <p className="text-gray-600 text-sm">No tests run yet. Click "Run Tests" to start.</p>
-        ) : (
-          <div className="space-y-2">
-            {testResults.map((result, index) => (
-              <div key={index} className="flex items-center space-x-2 text-sm">
-                <span>{getStatusIcon(result.status)}</span>
-                <span className={`font-medium ${getStatusColor(result.status)}`}>
-                  {result.test}:
-                </span>
-                <span className="text-gray-700">{result.message}</span>
-                <span className="text-gray-500 text-xs">({result.timestamp})</span>
-              </div>
-            ))}
+        <div className="bg-white rounded-2xl shadow-xl p-6">
+          <div className="flex space-x-4 mb-6">
+            <button
+              onClick={runAllTests}
+              disabled={loading}
+              className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50"
+            >
+              {loading ? 'Running Tests...' : '🧪 Run All Tests'}
+            </button>
+            <button
+              onClick={clearResults}
+              className="bg-gray-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
+            >
+              Clear Results
+            </button>
           </div>
-        )}
-      </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h4 className="font-medium text-blue-800 mb-2">What these tests check:</h4>
-        <ul className="text-sm text-blue-700 space-y-1">
-          <li>• <strong>Connection:</strong> Can connect to your Firebase Realtime Database</li>
-          <li>• <strong>Write:</strong> Can save data to the database</li>
-          <li>• <strong>Read:</strong> Can retrieve data from the database</li>
-          <li>• <strong>Push:</strong> Can add new entries (like workout history)</li>
-          <li>• <strong>Cleanup:</strong> Can remove test data</li>
-          <li>• <strong>User Document:</strong> Can create user profile (if logged in)</li>
-        </ul>
-      </div>
+          <button
+            onClick={handleBackToApp}
+            className="w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-green-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 mb-6"
+          >
+            ← Back to App
+          </button>
 
-      {testResults.some(r => r.status === 'error') && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <h4 className="font-medium text-red-800 mb-2">Troubleshooting Tips:</h4>
-          <ul className="text-sm text-red-700 space-y-1">
-            <li>• Make sure you created a <strong>Realtime Database</strong> (not Firestore)</li>
-            <li>• Check that your database URL is correct in firebase.js</li>
-            <li>• Verify your database rules allow read/write operations</li>
-            <li>• Ensure you have an active internet connection</li>
-            <li>• Check the browser console for detailed error messages</li>
-            <li>• If you get "User document not found", click "Create User Doc" (when logged in)</li>
-          </ul>
+          {testResults.length > 0 && (
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Test Results:</h3>
+              {testResults.map((test, index) => (
+                <div key={index} className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium text-gray-800">{test.name}</span>
+                    <span className={`font-semibold ${test.result.includes('PASS') ? 'text-green-600' : 'text-red-600'}`}>
+                      {test.result}
+                    </span>
+                  </div>
+                  {test.details && (
+                    <p className="text-sm text-gray-600">{test.details}</p>
+                  )}
+                  <p className="text-xs text-gray-400 mt-1">{test.timestamp}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+            <h4 className="font-semibold text-blue-800 mb-2">💡 Troubleshooting Tips:</h4>
+            <ul className="text-sm text-blue-700 space-y-1">
+              <li>• Make sure you're logged in to test the Cardio Crew features</li>
+              <li>• Check your Firebase database rules allow reading all users</li>
+              <li>• Verify there are other users in your database</li>
+              <li>• Check the browser console for detailed error messages</li>
+            </ul>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

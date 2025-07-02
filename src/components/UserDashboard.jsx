@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { realtimeAuthService } from '../services/realtimeAuthService';
 import FluencyDashboard from './FluencyDashboard';
+import EmojiSelector from './EmojiSelector';
 
-const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
+const UserDashboard = ({ onReturnToWorkout, onLogout, onShowCardioCrew }) => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -11,6 +12,8 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [workoutToDelete, setWorkoutToDelete] = useState(null);
+  const [showEmojiSelector, setShowEmojiSelector] = useState(false);
+  const [friends, setFriends] = useState([]);
 
   const fetchUserData = async () => {
     try {
@@ -19,6 +22,16 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
       console.log('User data received:', data);
       setUserData(data);
       setError(null);
+      
+      // Fetch friends data for Cardio Crew count
+      try {
+        const userFriends = await realtimeAuthService.getFriends();
+        console.log('User friends:', userFriends);
+        setFriends(userFriends);
+      } catch (friendsError) {
+        console.error('Error fetching friends:', friendsError);
+        setFriends([]);
+      }
     } catch (error) {
       console.error('Error fetching user data:', error);
       setError(error.message);
@@ -164,6 +177,29 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
     setWorkoutToDelete(null);
   };
 
+  const handleEmojiSelect = async (emoji) => {
+    try {
+      console.log('UserDashboard: Attempting to update emoji avatar to:', emoji);
+      
+      await realtimeAuthService.updateEmojiAvatar(emoji);
+      
+      // Update local state
+      setUserData(prev => ({ ...prev, emojiAvatar: emoji }));
+      
+    } catch (error) {
+      console.error('UserDashboard: Error updating emoji avatar:', error);
+      
+      // Show more specific error message
+      if (error.message.includes('permission') || error.message.includes('PERMISSION_DENIED')) {
+        alert('Database permission error. Please check your Firebase database rules. You may need to update them to allow writing to user data.');
+      } else if (error.message.includes('User profile not found')) {
+        alert('User profile not found. Please try logging out and logging back in.');
+      } else {
+        alert(`Failed to update avatar: ${error.message}`);
+      }
+    }
+  };
+
   const calculateStats = () => {
     // Normalize workoutHistory to always be an array
     let workoutArray = [];
@@ -246,23 +282,50 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
   return (
     <div className={`space-y-6 ${showFluency ? 'pointer-events-none select-none' : ''}`}>
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
           <h2 className="text-2xl font-bold text-gray-800">Your Dashboard</h2>
           <button
+            onClick={onShowCardioCrew}
+            className="w-full sm:w-auto bg-gradient-to-r from-green-500 to-teal-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-green-600 hover:to-teal-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 text-base shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
+          >
+            💪 Cardio Crew
+          </button>
+        </div>
+        
+        {/* User Avatar Section */}
+        <button
+          onClick={() => setShowEmojiSelector(true)}
+          className="w-full bg-white border border-gray-200 rounded-xl p-4 hover:bg-gray-50 transition-all duration-200 cursor-pointer"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="text-4xl">{userData?.emojiAvatar || '💪'}</div>
+              <div className="text-left">
+                <div className="font-semibold text-gray-800">{userData?.username}</div>
+                <div className="text-sm text-gray-600">Tap to change avatar</div>
+              </div>
+            </div>
+            <div className="text-gray-400 text-sm">
+              ✏️
+            </div>
+          </div>
+        </button>
+        
+        {/* Action Buttons */}
+        <div className="flex space-x-3">
+          <button
+            onClick={onReturnToWorkout}
+            className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-200"
+          >
+            Start New Workout
+          </button>
+          <button
             onClick={() => setShowFluency(true)}
-            className="flex-1 ml-8 bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:from-green-500 hover:to-blue-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 text-base"
+            className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold py-3 px-6 rounded-xl hover:from-cyan-600 hover:to-blue-600 transition-all duration-200"
           >
             Skills
           </button>
         </div>
-        
-        {/* Start New Workout Button */}
-        <button
-          onClick={onReturnToWorkout}
-          className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200"
-        >
-          Start New Workout
-        </button>
       </div>
 
       {/* Overview Stats */}
@@ -271,17 +334,17 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
           <div className="text-2xl font-bold text-blue-600">{stats.totalWorkouts}</div>
           <div className="text-sm text-blue-700">Total Workouts</div>
         </div>
+        <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl">
+          <div className="text-2xl font-bold text-orange-600">{stats.monthlyWorkouts}</div>
+          <div className="text-sm text-orange-700">This Month</div>
+        </div>
         <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl">
           <div className="text-2xl font-bold text-green-600">{userData?.streak || 0}</div>
           <div className="text-sm text-green-700">Current Streak</div>
         </div>
         <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl">
-          <div className="text-2xl font-bold text-purple-600">{stats.weeklyWorkouts}</div>
-          <div className="text-sm text-purple-700">This Week</div>
-        </div>
-        <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl">
-          <div className="text-2xl font-bold text-orange-600">{stats.monthlyWorkouts}</div>
-          <div className="text-sm text-orange-700">This Month</div>
+          <div className="text-2xl font-bold text-purple-600">{friends.length}</div>
+          <div className="text-sm text-purple-700">Cardio Crew</div>
         </div>
       </div>
 
@@ -368,7 +431,7 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
       </div>
 
       {/* Dashboard Action Buttons */}
-      <div className="flex">
+      <div className="flex space-x-3">
         <button
           onClick={onLogout}
           className="w-full bg-gray-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
@@ -541,6 +604,15 @@ const UserDashboard = ({ onReturnToWorkout, onLogout }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Emoji Selector Modal */}
+      {showEmojiSelector && (
+        <EmojiSelector
+          selectedEmoji={userData?.emojiAvatar || '💪'}
+          onEmojiSelect={handleEmojiSelect}
+          onClose={() => setShowEmojiSelector(false)}
+        />
       )}
     </div>
   );
