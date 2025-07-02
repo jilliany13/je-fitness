@@ -3,6 +3,7 @@ import { realtimeAuthService } from '../services/realtimeAuthService';
 
 const CardioCrew = ({ onReturnToDashboard }) => {
   const [users, setUsers] = useState([]);
+  const [recommendedUsers, setRecommendedUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -10,6 +11,9 @@ const CardioCrew = ({ onReturnToDashboard }) => {
   const [peopleWhoAddedMe, setPeopleWhoAddedMe] = useState([]);
   const [addingFriend, setAddingFriend] = useState(null);
   const [activeTab, setActiveTab] = useState('my-crew'); // 'my-crew' or 'added-me'
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -43,13 +47,12 @@ const CardioCrew = ({ onReturnToDashboard }) => {
         
         console.log('Filtered users (excluding current user):', filteredUsers);
         
-        // Limit to 10 users and sort by streak (highest first)
-        const sortedUsers = filteredUsers
-          .sort((a, b) => (b.streak || 0) - (a.streak || 0))
-          .slice(0, 10);
-        console.log('Final sorted users to display:', sortedUsers);
+        // Get recommended users based on crew's friends
+        const recommended = await realtimeAuthService.getRecommendedUsers(friends);
+        setRecommendedUsers(recommended.slice(0, 4)); // Limit to 4 recommended users
         
-        setUsers(sortedUsers);
+        // Set regular users (for search functionality)
+        setUsers(filteredUsers);
       } catch (usersError) {
         console.error('Error fetching users:', usersError);
         if (usersError.message.includes('permission') || usersError.message.includes('PERMISSION_DENIED')) {
@@ -58,6 +61,7 @@ const CardioCrew = ({ onReturnToDashboard }) => {
           setError(`Failed to load users: ${usersError.message}`);
         }
         setUsers([]);
+        setRecommendedUsers([]);
       }
       
       // Get current user's friends (people I added)
@@ -129,6 +133,30 @@ const CardioCrew = ({ onReturnToDashboard }) => {
     return friends.some(friend => friend.uid === userUid);
   };
 
+  const handleSearch = async (query) => {
+    setSearchQuery(query);
+    
+    if (query.trim().length === 0) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    
+    try {
+      const results = users.filter(user => 
+        user.username.toLowerCase().includes(query.toLowerCase())
+      );
+      setSearchResults(results.slice(0, 10)); // Limit to 10 results
+    } catch (error) {
+      console.error('Error searching users:', error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -195,7 +223,12 @@ const CardioCrew = ({ onReturnToDashboard }) => {
                   No crew members yet. Add some friends below!
                 </p>
               ) : (
-                <div className="space-y-3">
+                <div className={`space-y-3 ${friends.length > 3 ? 'max-h-48 overflow-y-auto crew-scroll' : ''}`} style={friends.length > 3 ? { scrollbarWidth: 'none', msOverflowStyle: 'none' } : {}}>
+                  <style>{`
+                    .crew-scroll::-webkit-scrollbar {
+                      display: none;
+                    }
+                  `}</style>
                   {friends.map((friend) => (
                     <div key={friend.uid} className="flex items-center justify-between p-3 bg-white bg-opacity-20 rounded-2xl">
                       <div className="flex items-center space-x-3">
@@ -227,7 +260,12 @@ const CardioCrew = ({ onReturnToDashboard }) => {
                   No one has added you to their crew yet.
                 </p>
               ) : (
-                <div className="space-y-3">
+                <div className={`space-y-3 ${peopleWhoAddedMe.length > 3 ? 'max-h-48 overflow-y-auto added-me-scroll' : ''}`} style={peopleWhoAddedMe.length > 3 ? { scrollbarWidth: 'none', msOverflowStyle: 'none' } : {}}>
+                  <style>{`
+                    .added-me-scroll::-webkit-scrollbar {
+                      display: none;
+                    }
+                  `}</style>
                   {peopleWhoAddedMe.map((person) => (
                     <div key={person.uid} className="flex items-center justify-between p-3 bg-white bg-opacity-20 rounded-2xl">
                       <div className="flex items-center space-x-3">
@@ -258,18 +296,85 @@ const CardioCrew = ({ onReturnToDashboard }) => {
           )}
         </div>
 
-        <div className="mb-6">
+                <div className="mb-6">
           <h2 className="text-xl font-semibold text-white mb-4">
             Discover Athletes
           </h2>
-          {users.length === 0 ? (
-            <p className="text-white text-opacity-80 text-center py-4">
-              No other users found.
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {users.map((user) => (
-                                                    <div key={user.uid} className="flex items-center justify-between p-4 bg-white bg-opacity-25 rounded-2xl border border-white border-opacity-20 shadow-lg">
+          
+          {/* Search Bar */}
+          <div className="mb-4">
+            <input
+              type="text"
+              placeholder="Search by username..."
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="w-full p-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-2xl text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all duration-200"
+            />
+          </div>
+
+          {/* Search Results */}
+          {searchQuery.trim().length > 0 && (
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-white mb-3">
+                Search Results
+              </h3>
+              {isSearching ? (
+                <p className="text-white text-opacity-80 text-center py-4">
+                  Searching...
+                </p>
+              ) : searchResults.length === 0 ? (
+                <p className="text-white text-opacity-80 text-center py-4">
+                  No users found matching "{searchQuery}"
+                </p>
+              ) : (
+                <div className={`space-y-3 ${searchResults.length > 3 ? 'max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100' : ''}`}>
+                  {searchResults.map((user) => (
+                    <div key={user.uid} className="flex items-center justify-between p-4 bg-white bg-opacity-25 rounded-2xl border border-white border-opacity-20 shadow-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="text-2xl">{user.emojiAvatar || '💪'}</div>
+                        <div>
+                          <div className="font-semibold text-white">{user.username}</div>
+                          <div className="text-sm text-white text-opacity-80">
+                            {user.streak || 0} day streak
+                          </div>
+                        </div>
+                      </div>
+                      {isFriend(user.uid) ? (
+                        <span className="text-green-300 text-sm font-medium ml-4">✓ Added</span>
+                      ) : (
+                        <button
+                          onClick={() => handleAddFriend(user)}
+                          disabled={addingFriend === user.uid}
+                          className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-2 px-4 rounded-2xl hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 text-sm disabled:opacity-50 ml-4"
+                        >
+                          Add
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Recommended Athletes */}
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-3">
+              Recommended for You
+            </h3>
+            {recommendedUsers.length === 0 ? (
+              <p className="text-white text-opacity-80 text-center py-4">
+                No recommendations available yet.
+              </p>
+            ) : (
+              <div className={`space-y-3 ${recommendedUsers.length > 3 ? 'max-h-48 overflow-y-auto recommended-scroll' : ''}`} style={recommendedUsers.length > 3 ? { scrollbarWidth: 'none', msOverflowStyle: 'none' } : {}}>
+                <style>{`
+                  .recommended-scroll::-webkit-scrollbar {
+                    display: none;
+                  }
+                `}</style>
+                {recommendedUsers.map((user) => (
+                  <div key={user.uid} className="flex items-center justify-between p-4 bg-white bg-opacity-25 rounded-2xl border border-white border-opacity-20 shadow-lg">
                     <div className="flex items-center space-x-3">
                       <div className="text-2xl">{user.emojiAvatar || '💪'}</div>
                       <div>
@@ -291,9 +396,10 @@ const CardioCrew = ({ onReturnToDashboard }) => {
                       </button>
                     )}
                   </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <button

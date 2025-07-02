@@ -286,7 +286,7 @@ const UserDashboard = ({ onReturnToWorkout, onLogout, onShowCardioCrew }) => {
           <h2 className="text-2xl font-bold text-gray-800">Your Dashboard</h2>
           <button
             onClick={onShowCardioCrew}
-            className="flex-1 ml-8 bg-gradient-to-r from-green-500 to-teal-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-green-600 hover:to-teal-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 text-base"
+            className="flex-1 ml-8 bg-gradient-to-r from-green-500 to-teal-600 text-white font-semibold py-1.5 px-3 rounded-lg hover:from-green-600 hover:to-teal-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 text-sm"
           >
             💪 Cardio Crew
           </button>

@@ -564,6 +564,84 @@ export const realtimeAuthService = {
     }
   },
 
+  // Get recommended users based on crew's friends
+  async getRecommendedUsers(friends) {
+    try {
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        return [];
+      }
+
+      // If no friends, return random users
+      if (!friends || friends.length === 0) {
+        const allUsers = await this.getAllUsers();
+        const randomUsers = allUsers
+          .filter(user => user.uid !== currentUser.uid)
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 4);
+        return randomUsers;
+      }
+
+      // Get all users
+      const usersSnapshot = await get(ref(database, 'users'));
+      if (!usersSnapshot.exists()) {
+        return [];
+      }
+
+      const users = usersSnapshot.val();
+      const recommendedUsers = new Map(); // Use Map to avoid duplicates
+
+      // For each friend, get their friends and add to recommendations
+      for (const friend of friends) {
+        const friendData = users[friend.uid];
+        if (friendData && friendData.friends) {
+          for (const [friendOfFriendUid, friendOfFriendData] of Object.entries(friendData.friends)) {
+            // Skip if it's the current user or already in friends list
+            if (friendOfFriendUid === currentUser.uid || 
+                friends.some(f => f.uid === friendOfFriendUid)) {
+              continue;
+            }
+
+            // Get the full user data
+            const fullUserData = users[friendOfFriendUid];
+            if (fullUserData) {
+              recommendedUsers.set(friendOfFriendUid, {
+                uid: friendOfFriendUid,
+                username: fullUserData.username || 'Unknown User',
+                streak: fullUserData.streak || 0,
+                emojiAvatar: fullUserData.emojiAvatar || '💪'
+              });
+            }
+          }
+        }
+      }
+
+      // Convert to array and sort by streak (highest first)
+      const recommendations = Array.from(recommendedUsers.values())
+        .sort((a, b) => (b.streak || 0) - (a.streak || 0));
+
+      // If we don't have enough recommendations, add random users
+      if (recommendations.length < 4) {
+        const allUsers = await this.getAllUsers();
+        const randomUsers = allUsers
+          .filter(user => 
+            user.uid !== currentUser.uid && 
+            !friends.some(f => f.uid === user.uid) &&
+            !recommendations.some(r => r.uid === user.uid)
+          )
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 4 - recommendations.length);
+        
+        recommendations.push(...randomUsers);
+      }
+
+      return recommendations;
+    } catch (error) {
+      console.error('Error fetching recommended users:', error);
+      return [];
+    }
+  },
+
   // Add a friend to current user's Cardio Crew
   async addFriend(friendUid) {
     try {
